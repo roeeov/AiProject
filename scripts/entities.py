@@ -11,9 +11,9 @@ class PhysicsEntity:
         self.grounded = False
         
         self.action = ''
-        self.anim_offset = (-3, -3)
-        self.flip = False
-        self.set_action('idle')
+        self.anim_offset = (0 ,0)
+        self.deg = 0
+        self.set_action('run')
     
     def rect(self):
         return pygame.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1])
@@ -53,11 +53,6 @@ class PhysicsEntity:
                     self.collisions['up'] = True
                 self.pos[1] = entity_rect.y
 
-                
-        if movement[0] > 0:
-            self.flip = False
-        if movement[0] < 0:
-            self.flip = True
         
         self.Yvelocity = min(5, self.Yvelocity + 0.1)
         
@@ -67,7 +62,9 @@ class PhysicsEntity:
         self.animation.update()
         
     def render(self, surf, offset=(0, 0)):
-        surf.blit(pygame.transform.flip(self.animation.img(), self.flip, False), (self.pos[0] - offset[0] + self.anim_offset[0], self.pos[1] - offset[1] + self.anim_offset[1]))
+        rect = pygame.Rect(self.pos[0] - offset[0] + self.anim_offset[0], self.pos[1] - offset[1] + self.anim_offset[1], self.size[0], self.size[1])
+        #pygame.draw.rect(surf, (255, 0, 0), rect)
+        surf.blit(pygame.transform.rotate(self.animation.img(), -self.deg), (self.pos[0] - offset[0] + self.anim_offset[0], self.pos[1] - offset[1] + self.anim_offset[1]))
 
 
 
@@ -83,11 +80,11 @@ class Player(PhysicsEntity):
         if self.collisions['down']:
             self.air_time = 0
             
-        if self.air_time > 4:
-            self.set_action('jump')
-        elif movement[0] != 0:
-            self.set_action('run')
-        else:
-            self.set_action('idle')
-            
         self.grounded = self.air_time <= 4
+
+        if not self.grounded:
+            self.set_action('jump')
+            self.deg += 5
+        else:
+            self.set_action('run')
+            self.deg = round(self.deg % 360 / 90) * 90

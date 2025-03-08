@@ -6,7 +6,7 @@ from scripts.utils import load_image, load_images, Animation
 from scripts.entities import PhysicsEntity, Player
 from scripts.tilemap import Tilemap
 from scripts.clouds import Clouds
-from constants import TILE_SIZE, PLAYER_SPEED, PLAYER_POS, PLAYERS_SIZE, JUMP_HEIGHT, DISPLAY_SIZE
+from constants import TILE_SIZE, PLAYER_SPEED, PLAYER_POS, PLAYERS_SIZE, JUMP_HEIGHT, DISPLAY_SIZE, PLAYERS_IMAGE_SIZE
 
 class Game:
     def __init__(self, display):
@@ -23,14 +23,11 @@ class Game:
             'decor': load_images('tiles/decor', scale=IMGscale),
             'grass': load_images('tiles/grass', scale=IMGscale),
             'stone': load_images('tiles/stone', scale=IMGscale),
-            'player': load_image('entities/player.png'),
+            'player': load_image('player/player.png', scale=PLAYERS_IMAGE_SIZE),
             'background': load_image('background.png', scale=DISPLAY_SIZE),
             'clouds': load_images('clouds'),
-            'player/idle': Animation(load_images('entities/player/idle'), img_dur=6),
-            'player/run': Animation(load_images('entities/player/run'), img_dur=4),
-            'player/jump': Animation(load_images('entities/player/jump')),
-            'player/slide': Animation(load_images('entities/player/slide')),
-            'player/wall_slide': Animation(load_images('entities/player/wall_slide')),
+            'player/run': Animation(load_images('player/run', scale=PLAYERS_IMAGE_SIZE), img_dur=4),
+            'player/jump': Animation(load_images('player/jump', scale=PLAYERS_IMAGE_SIZE)),
         }
         
         self.clouds = Clouds(self.assets['clouds'], count=16)

@@ -4,17 +4,17 @@ import pygame
 from constants import FONT
 BASE_IMG_PATH = 'data/images/'
 
-def load_image(path, scale = None):
+def load_image(path, scale = None, remove_color = (0, 0, 0)):
     img = pygame.image.load(BASE_IMG_PATH + path).convert()
-    img.set_colorkey((0, 0, 0))
+    if remove_color is not None: img.set_colorkey(remove_color)
     if scale is not None:
         img = pygame.transform.scale(img, scale)
     return img
 
-def load_images(path, scale = None):
+def load_images(path, scale = None, remove_color = (0, 0, 0)):
     images = []
     for img_name in sorted(os.listdir(BASE_IMG_PATH + path)):
-        images.append(load_image(path + '/' + img_name, scale))
+        images.append(load_image(path + '/' + img_name, scale, remove_color))
     return images
         
 
@@ -104,9 +104,11 @@ class Button:
     def update(self, mouse_pressed=None, mouse_released=None):
         # This method should be called every frame before rendering
         # Update mouse position check
-        mouse_x = pygame.mouse.get_pos()[0] // 2
-        mouse_y = pygame.mouse.get_pos()[1] // 2
-        self.mouse_pos = mouse_x, mouse_y
+        
+        #mouse_x = pygame.mouse.get_pos()[0] // 2
+        # mouse_y = pygame.mouse.get_pos()[1] // 2
+        # self.mouse_pos = mouse_x, mouse_y
+        self.mouse_pos = pygame.mouse.get_pos()
         
         # Update mouse button state if provided
         if mouse_pressed is not None:
