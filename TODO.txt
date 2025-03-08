@@ -1,0 +1,17 @@
+
+TODO LIST:
+----------
+
+small stuff:
+
+-
+
+
+
+big stuff:
+
+- change all sprites
+- add gamemodes (wave)
+- make the game agent state based
+- add menu
+- make a player die when hitting block

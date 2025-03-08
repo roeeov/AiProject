@@ -2,9 +2,9 @@ import sys
 
 import pygame
 
-from scripts.utils import load_images
+from scripts.utils import load_images, load_image
 from scripts.tilemap import Tilemap
-from constants import TILE_SIZE, SCREEN_SIZE, FPS
+from constants import TILE_SIZE, SCREEN_SIZE, DISPLAY_SIZE, FPS, PHYSICS_TILES
 
 RENDER_SCALE = 2.0
 
@@ -14,13 +14,14 @@ class Editor:
 
         pygame.display.set_caption('editor')
         self.screen = pygame.display.set_mode(SCREEN_SIZE)
-        self.display = pygame.Surface((SCREEN_SIZE[0]/2, SCREEN_SIZE[1]/2))
+        self.display = pygame.Surface(DISPLAY_SIZE)
         self.zoom = 10
         self.clock = pygame.time.Clock()
         
         self.tilemap = Tilemap(self, tile_size=TILE_SIZE)
 
         self.assets = self.reload_assets()
+        self.bgIMG = load_image('background.png', scale=DISPLAY_SIZE)
         
         self.movement = [False, False, False, False]
         
@@ -51,7 +52,7 @@ class Editor:
         
     def run(self):
         while True:
-            self.display.fill((0, 0, 0))
+            self.display.blit(self.bgIMG, (0, 0))
             
             self.scroll[0] += (self.movement[1] - self.movement[0]) * 2
             self.scroll[1] += (self.movement[3] - self.movement[2]) * 2
@@ -93,8 +94,10 @@ class Editor:
                     if event.button == 1:
                         self.clicking = True
                         if not self.ongrid:
-                            tile_pos = ((mpos[0] + self.scroll[0]) / self.tilemap.tile_size, (mpos[1] + self.scroll[1]) / self.tilemap.tile_size)
-                            self.tilemap.offgrid_tiles.append({'type': self.tile_list[self.tile_group], 'variant': self.tile_variant, 'pos': tile_pos})
+                            tile_type = self.tile_list[self.tile_group]
+                            if (tile_type not in PHYSICS_TILES):
+                                tile_pos = ((mpos[0] + self.scroll[0]) / self.tilemap.tile_size, (mpos[1] + self.scroll[1]) / self.tilemap.tile_size)
+                                self.tilemap.offgrid_tiles.append({'type': self.tile_list[self.tile_group], 'variant': self.tile_variant, 'pos': tile_pos})
                     if event.button == 3:
                         self.right_clicking = True
                     if self.shift:
@@ -133,13 +136,14 @@ class Editor:
                     if event.key in {pygame.K_LSHIFT, pygame.K_RSHIFT}:
                         self.shift = True
                     if event.key == pygame.K_UP:
-                        self.zoom += 2
-                        self.zoom = int(self.zoom)
-                        self.tilemap.tile_size = int(TILE_SIZE * self.zoom // 10)
-                        self.assets = self.reload_assets()
+                        if self.zoom < 20:
+                            self.zoom += 1
+                            self.zoom = int(self.zoom)
+                            self.tilemap.tile_size = int(TILE_SIZE * self.zoom // 10)
+                            self.assets = self.reload_assets()
                     if event.key == pygame.K_DOWN:
-                        if self.zoom > 2:
-                            self.zoom -= 2
+                        if self.zoom > 1:
+                            self.zoom -= 1
                             self.zoom = int(self.zoom)
                             self.tilemap.tile_size = int(TILE_SIZE * self.zoom // 10)
                             self.assets = self.reload_assets()

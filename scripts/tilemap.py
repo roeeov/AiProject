@@ -1,6 +1,7 @@
 import json
 
 import pygame
+from constants import PHYSICS_TILES, AUTOTILE_TYPES
 
 AUTOTILE_MAP = {
     tuple(sorted([(1, 0), (0, 1)])): 0,

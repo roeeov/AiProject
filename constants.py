@@ -1,5 +1,6 @@
 
 SCREEN_SIZE = (640, 480)
+DISPLAY_SIZE = (SCREEN_SIZE[0]//2, SCREEN_SIZE[1]//2)
 FPS = 60
 
 TILE_SIZE = 32
@@ -10,3 +11,9 @@ PLAYER_POS = (50, 50)
 PLAYERS_SIZE = (8, 15)
 
 JUMP_HEIGHT = 3
+
+PHYSICS_TILES = {'grass', 'stone'}
+AUTOTILE_TYPES = {'grass', 'stone'}
+
+FONT = None
+

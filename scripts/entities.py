@@ -18,9 +18,6 @@ class PhysicsEntity:
     def rect(self):
         return pygame.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1])
     
-    def collision_rect(self):
-        return pygame.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1] + 1)
-    
     def set_action(self, action):
         if action != self.action:
             self.action = action
@@ -33,11 +30,6 @@ class PhysicsEntity:
         
         self.pos[0] += frame_movement[0]
         entity_rect = self.rect()
-        grounded_rect = self.collision_rect()
-
-        self.grounded = False
-        for rect in tilemap.physics_rects_around(self.pos):
-            if grounded_rect.colliderect(rect): self.grounded = True
 
         for rect in tilemap.physics_rects_around(self.pos):
             if entity_rect.colliderect(rect):
@@ -97,3 +89,5 @@ class Player(PhysicsEntity):
             self.set_action('run')
         else:
             self.set_action('idle')
+            
+        self.grounded = self.air_time <= 4
