@@ -105,9 +105,6 @@ class Button:
         # This method should be called every frame before rendering
         # Update mouse position check
         
-        #mouse_x = pygame.mouse.get_pos()[0] // 2
-        # mouse_y = pygame.mouse.get_pos()[1] // 2
-        # self.mouse_pos = mouse_x, mouse_y
         self.mouse_pos = pygame.mouse.get_pos()
         
         # Update mouse button state if provided

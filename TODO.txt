@@ -4,7 +4,7 @@ TODO LIST:
 
 small stuff:
 
--
+- fix the player not rotating at some point
 
 
 

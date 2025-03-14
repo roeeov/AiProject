@@ -4,17 +4,14 @@ import pygame
 
 from scripts.utils import load_images, load_image
 from scripts.tilemap import Tilemap
-from constants import TILE_SIZE, SCREEN_SIZE, DISPLAY_SIZE, FPS, PHYSICS_TILES
-
-RENDER_SCALE = 2.0
+from constants import TILE_SIZE, DISPLAY_SIZE, FPS, PHYSICS_TILES
 
 class Editor:
     def __init__(self):
         pygame.init()
 
         pygame.display.set_caption('editor')
-        self.screen = pygame.display.set_mode(SCREEN_SIZE)
-        self.display = pygame.Surface(DISPLAY_SIZE)
+        self.display = pygame.display.set_mode(DISPLAY_SIZE)
         self.zoom = 10
         self.clock = pygame.time.Clock()
         
@@ -64,7 +61,6 @@ class Editor:
             current_tile_img.set_alpha(100)
             
             mpos = pygame.mouse.get_pos()
-            mpos = (mpos[0] / RENDER_SCALE, mpos[1] / RENDER_SCALE)
             tile_pos = (int((mpos[0] + self.scroll[0]) // self.tilemap.tile_size), int((mpos[1] + self.scroll[1]) // self.tilemap.tile_size))
             
             if self.ongrid:
@@ -159,7 +155,6 @@ class Editor:
                     if event.key not in {pygame.K_LSHIFT, pygame.K_RSHIFT}:
                         self.shift = False
             
-            self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()), (0, 0))
             pygame.display.update()
             self.clock.tick(FPS)
 
