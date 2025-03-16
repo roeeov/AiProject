@@ -2,15 +2,14 @@
 TODO LIST:
 ----------
 
-small stuff:
+SMALL STUFF:
 
 - fix the player not rotating at some point
+- add wave sprites
 
 
-
-big stuff:
+BIG STUFF:
 
 - change all sprites
-- add gamemodes (wave)
+- add gamemodes
 - make the game agent state based
-- make a player die when hitting block
