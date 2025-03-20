@@ -76,4 +76,4 @@ class Game:
         self.player.render(self.display, offset=render_scroll)    
 
         # check if the player death animation has ended
-        # if self.player.respawn: self.reset()
+        if self.player.respawn: self.reset()
