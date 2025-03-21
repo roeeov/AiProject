@@ -11,7 +11,18 @@ class PhysicsEntity:
         
         self.anim_offset = (0 ,0)
 
-        self.reset()
+        self.pos = self.startPos.copy()
+        self.Yvelocity = 0
+        self.collisions = {'up': False, 'down': False, 'right': False}
+        self.grounded = False
+        self.death = False
+        self.respawn = False
+        self.gamemode = 'wave'
+        self.size = self.sizes[self.gamemode]
+        
+        self.deg = 0
+        self.action = ''
+        self.set_action('run')
 
     def reset(self):
         self.pos = self.startPos.copy()
@@ -31,6 +42,7 @@ class PhysicsEntity:
         return pygame.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1])
     
     def set_action(self, action):
+        if self.gamemode not in GRAVITY_GAMEMODES: action = 'run'
         if action != self.action:
             self.action = action
             self.animation = self.game.assets[self.type + '/' + self.gamemode + '/' + self.action].copy()
@@ -65,7 +77,7 @@ class PhysicsEntity:
 
         self.checkDeath()
 
-        if self.gamemode in GRAVITY_GAMEMODES and not self.collisions['down']:
+        if self.gamemode in GRAVITY_GAMEMODES and not (self.collisions['down'] or self.collisions['up']):
             self.Yvelocity = min(10, self.Yvelocity + GRAVITY)
         else:
             self.Yvelocity = 0
@@ -100,7 +112,29 @@ class Player(PhysicsEntity):
         self.jump_speed = JUMP_HEIGHT  # Use the constant from constants.py
         self.rotation_speed = 5  # Increased from 3 to make rotation faster
         self.total_rotation = 0  # Track total rotation during a jump
+        self.trail = [].copy()
         self.upPressed = False
+
+    def reset(self):
+        super().reset()
+        self.air_time = 0
+        self.rotation_speed = 5  # Increased from 3 to make rotation faster
+        self.total_rotation = 0  # Track total rotation during a jump
+        self.trail = [].copy()
+        self.upPressed = False
+
+    def render(self, surf, offset=(0, 0)):
+        for pos in self.trail:
+            # Get the original image
+            original_img = self.animation.img()
+            # Get the rectangle of the rotated image
+            rotated_rect = original_img.get_rect(topleft=(pos[0] - offset[0],
+                                                    pos[1] - offset[1]))
+            # Draw the rotated image
+            surf.blit(original_img, rotated_rect)
+            
+
+        super().render(surf, offset)
         
     def update(self, tilemap, upPressed):
         # Always move at constant speed
@@ -128,17 +162,17 @@ class Player(PhysicsEntity):
         
         if not self.death:
             # Handle jumping and rotation
-            if not self.grounded:
-                if self.gamemode in GRAVITY_GAMEMODES:
-                    self.set_action('jump')
-                self.rotatePlayer()
+            self.updateVisuals()
                 
-            else:
+            if self.grounded:
                 self.set_action('run')
                 # Reset rotation tracking when grounded
                 if just_landed:
                     self.deg = round(self.deg % 360 / 90) * 90  # Snap to nearest full rotation
                     self.total_rotation = 0
+            else:
+                if self.gamemode in GRAVITY_GAMEMODES:
+                    self.set_action('jump')
         else:
             self.deg = 0
             self.set_action('death')
@@ -159,25 +193,29 @@ class Player(PhysicsEntity):
                     self.Yvelocity = WAVE_MOVE   # Set directly to positive WAVE_MOVE
 
 
-    def rotatePlayer(self):
+    def updateVisuals(self):
             
             match self.gamemode:
 
                 case 'cube':
-                    # Calculate rotation to complete 360 degrees during jump
-                    if self.Yvelocity < 0:  # First half of jump (going up)
-                        target_rotation = 180
-                    else:  # Second half of jump (falling down)
-                        target_rotation = 360
-                            
-                    # Smoothly rotate toward target but faster
-                    degrees_left = target_rotation - self.total_rotation
-                    rotation_step = min(self.rotation_speed, degrees_left / 5 + 2)   # Modified for faster rotation
-                    self.total_rotation += rotation_step
-                    self.deg += rotation_step
+                    if not self.grounded:
+                        # Calculate rotation to complete 360 degrees during jump
+                        if self.Yvelocity < 0:  # First half of jump (going up)
+                            target_rotation = 180
+                        else:  # Second half of jump (falling down)
+                            target_rotation = 360
+                                
+                        # Smoothly rotate toward target but faster
+                        degrees_left = target_rotation - self.total_rotation
+                        rotation_step = min(self.rotation_speed, degrees_left / 5 + 2)   # Modified for faster rotation
+                        self.total_rotation += rotation_step
+                        self.deg += rotation_step
 
                 case 'wave':
                     if self.upPressed:
                         self.deg += (-45-self.deg) * 0.4
                     else:
                         self.deg += (45-self.deg) * 0.4
+
+                    self.trail.append(self.pos.copy())
+                    if len(self.trail) > 100: self.trail.pop(0)

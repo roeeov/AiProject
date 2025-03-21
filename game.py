@@ -25,6 +25,7 @@ class Game:
             'stone': load_images('tiles/stone', scale=IMGscale),
             'background': load_image('background.png', scale=DISPLAY_SIZE),
             'clouds': load_images('clouds'),
+            'trail': load_image('player/trail/trail.png', scale=IMGscale)
         }
         for gamemode in GAMEMODES:
             IMG_scale = PLAYERS_IMAGE_SIZE[gamemode]
@@ -73,7 +74,9 @@ class Game:
         self.tilemap.render(self.display, offset=render_scroll)
             
         self.player.update(self.tilemap, self.up)
-        self.player.render(self.display, offset=render_scroll)    
+        self.player.render(self.display, offset=render_scroll)  
+
+        #print(self.player.pos)  
 
         # check if the player death animation has ended
         if self.player.respawn: self.reset()
