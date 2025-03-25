@@ -1095,6 +1095,62 @@
                 43,
                 -4
             ]
+        },
+        "5;-4": {
+            "type": "grass",
+            "variant": 0,
+            "pos": [
+                5,
+                -4
+            ]
+        },
+        "4;-4": {
+            "type": "grass",
+            "variant": 0,
+            "pos": [
+                4,
+                -4
+            ]
+        },
+        "3;-4": {
+            "type": "grass",
+            "variant": 0,
+            "pos": [
+                3,
+                -4
+            ]
+        },
+        "2;-4": {
+            "type": "grass",
+            "variant": 0,
+            "pos": [
+                2,
+                -4
+            ]
+        },
+        "0;-4": {
+            "type": "grass",
+            "variant": 0,
+            "pos": [
+                0,
+                -4
+            ]
+        },
+        "1;-4": {
+            "type": "grass",
+            "variant": 0,
+            "pos": [
+                1,
+                -4
+            ]
+        },
+        "33;-3": {
+            "type": "portal",
+            "variant": 2,
+            "pos": [
+                33,
+                -3
+            ]
         }
     },
     "offgrid": []

@@ -23,6 +23,7 @@ PLAYER_VELOCITY = {'cube': 16, 'wave': PLAYER_SPEED, 'ball': 1.8}
 MAX_VELOCITY = {'cube': 16, 'ball': 12}
 
 PHYSICS_TILES = {'grass', 'stone'}
+INTERACTIVE_TILES = {'portal'}
 AUTOTILE_TYPES = {'grass', 'stone'}
 
 FONT = None

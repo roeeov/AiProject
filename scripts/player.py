@@ -78,6 +78,10 @@ class Player:
                     self.collisions['up'] = True
                 self.pos[1] = entity_rect.y
 
+        for rect in tilemap.interactive_rects_around(self.pos):
+            if entity_rect.colliderect(rect):
+                self.setGameMode('wave')
+
         self.updateVelocity()
 
         self.air_time += 1
@@ -126,6 +130,7 @@ class Player:
         self.gamemode = gamemode
         self.size = PLAYERS_SIZE[self.gamemode]
         self.deg = 0
+        self.action = ''
         self.set_action('run')
 
     def set_action(self, action):

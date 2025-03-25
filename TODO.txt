@@ -7,6 +7,7 @@ SMALL STUFF:
 - fix the player not rotating at some point
 - add portals
 - add spikes
+- change interactive tiles function in tilemap to bring tiles as a tuple: (rect, portal-type)
 
 BIG STUFF:
 

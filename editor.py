@@ -45,6 +45,7 @@ class Editor:
             'decor': load_images('tiles/decor', scale=IMGscale),
             'grass': load_images('tiles/grass', scale=IMGscale),
             'stone': load_images('tiles/stone', scale=IMGscale),
+            'portal': load_images('tiles/portal', scale=(IMGscale[0], IMGscale[1]*2)),
         }
         
     def run(self):

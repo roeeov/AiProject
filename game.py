@@ -24,6 +24,7 @@ class Game:
             'decor': load_images('tiles/decor', scale=IMGscale),
             'grass': load_images('tiles/grass', scale=IMGscale),
             'stone': load_images('tiles/stone', scale=IMGscale),
+            'portal': load_images('tiles/portal', scale=(IMGscale[0], IMGscale[1]*2)),
             'background': load_image('background.png', scale=DISPLAY_SIZE),
             'clouds': load_images('clouds'),
             'trail': load_image('player/trail/trail.png', scale=(PLAYERS_SIZE['wave'][0]*0.5, PLAYERS_SIZE['wave'][1]*0.5))
