@@ -5,11 +5,12 @@ TODO LIST:
 SMALL STUFF:
 
 - fix the player not rotating at some point
-- add wave sprites
-
+- add portals
+- add spikes
 
 BIG STUFF:
 
 - change all sprites
-- add gamemodes
+- add gamemodes (ufo)
 - make the game agent state based
+- change readme file

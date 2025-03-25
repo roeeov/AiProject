@@ -4,7 +4,7 @@ import pygame
 
 from scripts.utils import load_images, load_image
 from scripts.tilemap import Tilemap
-from constants import TILE_SIZE, DISPLAY_SIZE, FPS, PHYSICS_TILES
+from constants import *
 
 class Editor:
     def __init__(self):
@@ -51,11 +51,11 @@ class Editor:
         while True:
             self.display.blit(self.bgIMG, (0, 0))
             
-            self.scroll[0] += (self.movement[1] - self.movement[0]) * 2
-            self.scroll[1] += (self.movement[3] - self.movement[2]) * 2
+            self.scroll[0] += (self.movement[1] - self.movement[0]) * EDITOR_SCROLL
+            self.scroll[1] += (self.movement[3] - self.movement[2]) * EDITOR_SCROLL
             render_scroll = (int(self.scroll[0]), int(self.scroll[1]))
             
-            self.tilemap.render(self.display, offset=render_scroll, zoom= self.zoom)
+            self.tilemap.render(self.display, offset=render_scroll)
             
             current_tile_img = self.assets[self.tile_list[self.tile_group]][self.tile_variant].copy()
             current_tile_img.set_alpha(100)
@@ -152,7 +152,7 @@ class Editor:
                         self.movement[2] = False
                     if event.key == pygame.K_s:
                         self.movement[3] = False
-                    if event.key not in {pygame.K_LSHIFT, pygame.K_RSHIFT}:
+                    if event.key in {pygame.K_LSHIFT, pygame.K_RSHIFT}:
                         self.shift = False
             
             pygame.display.update()

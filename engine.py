@@ -27,7 +27,7 @@ class Engine:
             fpsTXT = Text(fps, (50, 50))
             fpsTXT.blit(self.display)
 
-            pygame.display.update()
+            pygame.display.update() 
             self.clock.tick(FPS)
 
 
