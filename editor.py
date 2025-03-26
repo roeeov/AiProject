@@ -70,11 +70,26 @@ class Editor:
                 self.display.blit(current_tile_img, mpos)
             
             if self.clicking and self.ongrid:
-                self.tilemap.tilemap[str(tile_pos[0]) + ';' + str(tile_pos[1])] = {'type': self.tile_list[self.tile_group], 'variant': self.tile_variant, 'pos': tile_pos}
+                tile_type = self.tile_list[self.tile_group]
+                if tile_type != 'portal':
+                    self.tilemap.tilemap[str(tile_pos[0]) + ';' + str(tile_pos[1])] = {'type': tile_type, 'variant': self.tile_variant, 'pos': tile_pos}
+                else:
+                    self.tilemap.tilemap[str(tile_pos[0]) + ';' + str(tile_pos[1])] = {'type': tile_type + ' up', 'variant': self.tile_variant, 'pos': tile_pos}
+                    self.tilemap.tilemap[str(tile_pos[0]) + ';' + str(tile_pos[1]+1)] = {'type': tile_type + ' down', 'variant': self.tile_variant, 'pos': (tile_pos[0], tile_pos[1]+1)}
+
             if self.right_clicking:
+
                 tile_loc = str(tile_pos[0]) + ';' + str(tile_pos[1])
+
                 if tile_loc in self.tilemap.tilemap:
+                    tile = self.tilemap.tilemap[tile_loc]
+                    if tile['type'].split()[0] == 'portal':
+                        if tile['type'].split()[1] == 'up':
+                            del self.tilemap.tilemap[str(tile_pos[0]) + ';' + str(tile_pos[1]+1)]
+                        else:
+                            del self.tilemap.tilemap[str(tile_pos[0]) + ';' + str(tile_pos[1]-1)]
                     del self.tilemap.tilemap[tile_loc]
+                    
                 for tile in self.tilemap.offgrid_tiles.copy():
                     tile_img = self.assets[tile['type']][tile['variant']]
                     tile_r = pygame.Rect(tile['pos'][0] * self.tilemap.tile_size - self.scroll[0], tile['pos'][1] * self.tilemap.tile_size - self.scroll[1], tile_img.get_width(), tile_img.get_height())
@@ -92,7 +107,7 @@ class Editor:
                         self.clicking = True
                         if not self.ongrid:
                             tile_type = self.tile_list[self.tile_group]
-                            if (tile_type not in PHYSICS_TILES):
+                            if (tile_type not in PHYSICS_TILES and tile_type not in INTERACTIVE_TILES):
                                 tile_pos = ((mpos[0] + self.scroll[0]) / self.tilemap.tile_size, (mpos[1] + self.scroll[1]) / self.tilemap.tile_size)
                                 self.tilemap.offgrid_tiles.append({'type': self.tile_list[self.tile_group], 'variant': self.tile_variant, 'pos': tile_pos})
                     if event.button == 3:

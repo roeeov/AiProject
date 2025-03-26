@@ -78,9 +78,12 @@ class Player:
                     self.collisions['up'] = True
                 self.pos[1] = entity_rect.y
 
-        for rect in tilemap.interactive_rects_around(self.pos):
+        for rect, (type, variant) in tilemap.interactive_rects_around(self.pos):
             if entity_rect.colliderect(rect):
-                self.setGameMode('wave')
+                match type:
+                    case 'portal':
+                        game_mode = {0 : 'ball', 1 : 'cube', 2 : 'wave'}[variant]
+                        self.setGameMode(game_mode)
 
         self.updateVelocity()
 

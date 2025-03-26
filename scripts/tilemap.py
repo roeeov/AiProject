@@ -58,11 +58,11 @@ class Tilemap:
         return rects
     
     def interactive_rects_around(self, pos):
-        rects = []
+        tiles = []
         for tile in self.tiles_around(pos):
-            if tile['type'] in INTERACTIVE_TILES:
-                rects.append(pygame.Rect(tile['pos'][0] * self.tile_size, tile['pos'][1] * self.tile_size, self.tile_size, self.tile_size))
-        return rects
+            if tile['type'].split()[0] in INTERACTIVE_TILES:
+                tiles.append((pygame.Rect(tile['pos'][0] * self.tile_size, tile['pos'][1] * self.tile_size, self.tile_size, self.tile_size), (tile['type'].split()[0], tile['variant'])))
+        return tiles
     
     def autotile(self):
         for loc in self.tilemap:
@@ -86,4 +86,5 @@ class Tilemap:
                 loc = str(x) + ';' + str(y)
                 if loc in self.tilemap:
                     tile = self.tilemap[loc]
-                    surf.blit(self.game.assets[tile['type']][tile['variant']], (tile['pos'][0] * self.tile_size - offset[0], tile['pos'][1] * self.tile_size - offset[1]))
+                    if tile['type'] != 'portal down':
+                        surf.blit(self.game.assets[tile['type'].split()[0]][tile['variant']], (tile['pos'][0] * self.tile_size - offset[0], tile['pos'][1] * self.tile_size - offset[1]))
