@@ -47,6 +47,9 @@ class Editor:
             'stone': load_images('tiles/stone', scale=IMGscale),
             'portal': load_images('tiles/portal', scale=(IMGscale[0], IMGscale[1]*2)),
         }
+    
+    #def deleteGridBlock(tile_loc):
+
         
     def run(self):
         while True:

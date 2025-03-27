@@ -13,10 +13,10 @@ PLAYER_POS = [50, 50]
 # Needs to be changed for every new gamemode added
 GAMEMODES= {'cube', 'wave', 'ball'}
 GRAVITY_GAMEMODES = {'cube', 'ball'}
-PLAYERS_SIZE = {'cube': (TILE_SIZE, TILE_SIZE), 'wave': (TILE_SIZE*0.6, TILE_SIZE*0.6), 'ball': (TILE_SIZE, TILE_SIZE)}
+PLAYERS_SIZE = {'cube': (TILE_SIZE, TILE_SIZE), 'wave': (TILE_SIZE*0.4, TILE_SIZE*0.4), 'ball': (TILE_SIZE, TILE_SIZE)}
 PLAYERS_IMAGE_SIZE = {
         'cube': PLAYERS_SIZE['cube'],
-        'wave': (PLAYERS_SIZE['wave'][0]*1.2, PLAYERS_SIZE['wave'][1]*1.2),
+        'wave': (PLAYERS_SIZE['wave'][0]*1.8, PLAYERS_SIZE['wave'][1]*1.8),
         'ball': PLAYERS_SIZE['ball'],
     }
 PLAYER_VELOCITY = {'cube': 16, 'wave': PLAYER_SPEED, 'ball': 1.8}

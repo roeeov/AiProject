@@ -27,7 +27,7 @@ class Game:
             'portal': load_images('tiles/portal', scale=(IMGscale[0], IMGscale[1]*2)),
             'background': load_image('background.png', scale=DISPLAY_SIZE),
             'clouds': load_images('clouds'),
-            'trail': load_image('player/trail/trail.png', scale=(PLAYERS_SIZE['wave'][0]*0.5, PLAYERS_SIZE['wave'][1]*0.5))
+            'trail': load_image('player/trail/trail.png', scale=(PLAYERS_IMAGE_SIZE['wave'][0]*0.4, PLAYERS_IMAGE_SIZE['wave'][1]*0.4))
         }
         for gamemode in GAMEMODES:
             IMG_scale = PLAYERS_IMAGE_SIZE[gamemode]
