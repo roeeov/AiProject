@@ -6,7 +6,7 @@ from scripts.utils import load_image, load_images, Animation
 from scripts.player import Player
 from scripts.tilemap import Tilemap
 from scripts.clouds import Clouds
-from constants import TILE_SIZE, PLAYERS_SIZE, DISPLAY_SIZE, PLAYERS_IMAGE_SIZE, GAMEMODES, GRAVITY_GAMEMODES
+from constants import TILE_SIZE, DISPLAY_SIZE, PLAYERS_IMAGE_SIZE, GAMEMODES, GRAVITY_GAMEMODES
 
 class Game:
     def __init__(self, display):
@@ -25,6 +25,7 @@ class Game:
             'grass': load_images('tiles/grass', scale=IMGscale),
             'stone': load_images('tiles/stone', scale=IMGscale),
             'portal': load_images('tiles/portal', scale=(IMGscale[0], IMGscale[1]*2)),
+            'spike': load_images('tiles/spike', scale=IMGscale),
             'background': load_image('background.png', scale=DISPLAY_SIZE),
             'clouds': load_images('clouds'),
             'trail': load_image('player/trail/trail.png', scale=(PLAYERS_IMAGE_SIZE['wave'][0]*0.4, PLAYERS_IMAGE_SIZE['wave'][1]*0.4))

@@ -137,7 +137,7 @@ class Player:
         self.set_action('run')
 
     def set_action(self, action):
-        if self.gamemode not in GRAVITY_GAMEMODES: action = 'run'
+        if action == 'jump'and self.gamemode not in GRAVITY_GAMEMODES: action = 'run'
         if action != self.action:
             self.action = action
             self.animation = self.game.assets['player/' + self.gamemode + '/' + self.action].copy()

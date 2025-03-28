@@ -37,7 +37,6 @@ class Tilemap:
     
     def save(self, path):
         f = open(path, 'w')
-        #json.dump({'tilemap': self.tilemap, 'tile_size': self.tile_size, 'offgrid': self.offgrid_tiles}, f)
         json.dump({'tilemap': self.tilemap, 'offgrid': self.offgrid_tiles}, f, indent=4)
         f.close()
         
@@ -47,7 +46,6 @@ class Tilemap:
         f.close()
         
         self.tilemap = map_data['tilemap']
-        #self.tile_size = map_data['tile_size']
         self.offgrid_tiles = map_data['offgrid']
     
     def physics_rects_around(self, pos):

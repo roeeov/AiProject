@@ -46,10 +46,26 @@ class Editor:
             'grass': load_images('tiles/grass', scale=IMGscale),
             'stone': load_images('tiles/stone', scale=IMGscale),
             'portal': load_images('tiles/portal', scale=(IMGscale[0], IMGscale[1]*2)),
+            'spike': load_images('tiles/spike', scale=IMGscale),
         }
     
-    #def deleteGridBlock(tile_loc):
+    def deleteGridBlock(self, tile_pos):
+        tile_loc = str(tile_pos[0]) + ';' + str(tile_pos[1])
+        print(tile_loc in self.tilemap.tilemap)
+        if tile_loc in self.tilemap.tilemap:
+            tile = self.tilemap.tilemap[tile_loc]
+            if tile['type'].split()[0] == 'portal':
+                if tile['type'].split()[1] == 'up':
+                    if str(tile_pos[0]) + ';' + str(tile_pos[1]+1) in self.tilemap.tilemap:
+                        del self.tilemap.tilemap[str(tile_pos[0]) + ';' + str(tile_pos[1]+1)]
+                else:
+                    if str(tile_pos[0]) + ';' + str(tile_pos[1]-1) in self.tilemap.tilemap:
+                        del self.tilemap.tilemap[str(tile_pos[0]) + ';' + str(tile_pos[1]-1)]
+            del self.tilemap.tilemap[tile_loc]
 
+    def placeGridBlock(self, tile_pos, tile_type):
+        self.deleteGridBlock(tile_pos)
+        self.tilemap.tilemap[str(tile_pos[0]) + ';' + str(tile_pos[1])] = {'type': tile_type, 'variant': self.tile_variant, 'pos': tile_pos}
         
     def run(self):
         while True:
@@ -75,23 +91,14 @@ class Editor:
             if self.clicking and self.ongrid:
                 tile_type = self.tile_list[self.tile_group]
                 if tile_type != 'portal':
-                    self.tilemap.tilemap[str(tile_pos[0]) + ';' + str(tile_pos[1])] = {'type': tile_type, 'variant': self.tile_variant, 'pos': tile_pos}
+                    self.placeGridBlock(tile_pos, tile_type)
                 else:
-                    self.tilemap.tilemap[str(tile_pos[0]) + ';' + str(tile_pos[1])] = {'type': tile_type + ' up', 'variant': self.tile_variant, 'pos': tile_pos}
-                    self.tilemap.tilemap[str(tile_pos[0]) + ';' + str(tile_pos[1]+1)] = {'type': tile_type + ' down', 'variant': self.tile_variant, 'pos': (tile_pos[0], tile_pos[1]+1)}
+                    self.placeGridBlock(tile_pos, tile_type + ' up')
+                    self.placeGridBlock((tile_pos[0], tile_pos[1]+1), tile_type + ' down')
 
             if self.right_clicking:
 
-                tile_loc = str(tile_pos[0]) + ';' + str(tile_pos[1])
-
-                if tile_loc in self.tilemap.tilemap:
-                    tile = self.tilemap.tilemap[tile_loc]
-                    if tile['type'].split()[0] == 'portal':
-                        if tile['type'].split()[1] == 'up':
-                            del self.tilemap.tilemap[str(tile_pos[0]) + ';' + str(tile_pos[1]+1)]
-                        else:
-                            del self.tilemap.tilemap[str(tile_pos[0]) + ';' + str(tile_pos[1]-1)]
-                    del self.tilemap.tilemap[tile_loc]
+                self.deleteGridBlock(tile_pos)
                     
                 for tile in self.tilemap.offgrid_tiles.copy():
                     tile_img = self.assets[tile['type']][tile['variant']]
