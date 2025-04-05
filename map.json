@@ -1,21 +1,5 @@
 {
     "tilemap": {
-        "9;4": {
-            "type": "grass",
-            "variant": 5,
-            "pos": [
-                9,
-                4
-            ]
-        },
-        "10;4": {
-            "type": "grass",
-            "variant": 5,
-            "pos": [
-                10,
-                4
-            ]
-        },
         "11;4": {
             "type": "grass",
             "variant": 5,
@@ -776,172 +760,12 @@
                 -1
             ]
         },
-        "29;-2": {
-            "type": "portal down",
-            "variant": 2,
-            "pos": [
-                29,
-                -2
-            ]
-        },
         "36;-2": {
             "type": "decor",
             "variant": 0,
             "pos": [
                 36,
                 -2
-            ]
-        },
-        "6;-4": {
-            "type": "stone",
-            "variant": 0,
-            "pos": [
-                6,
-                -4
-            ]
-        },
-        "7;-4": {
-            "type": "stone",
-            "variant": 0,
-            "pos": [
-                7,
-                -4
-            ]
-        },
-        "8;-4": {
-            "type": "stone",
-            "variant": 0,
-            "pos": [
-                8,
-                -4
-            ]
-        },
-        "9;-4": {
-            "type": "stone",
-            "variant": 0,
-            "pos": [
-                9,
-                -4
-            ]
-        },
-        "10;-4": {
-            "type": "stone",
-            "variant": 0,
-            "pos": [
-                10,
-                -4
-            ]
-        },
-        "11;-4": {
-            "type": "stone",
-            "variant": 0,
-            "pos": [
-                11,
-                -4
-            ]
-        },
-        "12;-4": {
-            "type": "stone",
-            "variant": 0,
-            "pos": [
-                12,
-                -4
-            ]
-        },
-        "13;-4": {
-            "type": "stone",
-            "variant": 0,
-            "pos": [
-                13,
-                -4
-            ]
-        },
-        "14;-4": {
-            "type": "stone",
-            "variant": 0,
-            "pos": [
-                14,
-                -4
-            ]
-        },
-        "15;-4": {
-            "type": "stone",
-            "variant": 0,
-            "pos": [
-                15,
-                -4
-            ]
-        },
-        "16;-4": {
-            "type": "stone",
-            "variant": 0,
-            "pos": [
-                16,
-                -4
-            ]
-        },
-        "17;-4": {
-            "type": "stone",
-            "variant": 0,
-            "pos": [
-                17,
-                -4
-            ]
-        },
-        "18;-4": {
-            "type": "stone",
-            "variant": 0,
-            "pos": [
-                18,
-                -4
-            ]
-        },
-        "5;-4": {
-            "type": "grass",
-            "variant": 0,
-            "pos": [
-                5,
-                -4
-            ]
-        },
-        "4;-4": {
-            "type": "grass",
-            "variant": 0,
-            "pos": [
-                4,
-                -4
-            ]
-        },
-        "3;-4": {
-            "type": "grass",
-            "variant": 0,
-            "pos": [
-                3,
-                -4
-            ]
-        },
-        "2;-4": {
-            "type": "grass",
-            "variant": 0,
-            "pos": [
-                2,
-                -4
-            ]
-        },
-        "0;-4": {
-            "type": "grass",
-            "variant": 0,
-            "pos": [
-                0,
-                -4
-            ]
-        },
-        "1;-4": {
-            "type": "grass",
-            "variant": 0,
-            "pos": [
-                1,
-                -4
             ]
         },
         "50;-4": {
@@ -1318,14 +1142,6 @@
             "pos": [
                 81,
                 0
-            ]
-        },
-        "29;-3": {
-            "type": "portal up",
-            "variant": 2,
-            "pos": [
-                29,
-                -3
             ]
         },
         "39;-1": {
@@ -2270,30 +2086,6 @@
             "pos": [
                 140,
                 0
-            ]
-        },
-        "12;3": {
-            "type": "spike",
-            "variant": 0,
-            "pos": [
-                12,
-                3
-            ]
-        },
-        "11;3": {
-            "type": "spike",
-            "variant": 0,
-            "pos": [
-                11,
-                3
-            ]
-        },
-        "10;3": {
-            "type": "spike",
-            "variant": 0,
-            "pos": [
-                10,
-                3
             ]
         },
         "18;1": {
@@ -3322,7 +3114,7 @@
         },
         "41;-8": {
             "type": "grass",
-            "variant": 0,
+            "variant": 4,
             "pos": [
                 41,
                 -8
@@ -3338,7 +3130,7 @@
         },
         "42;-9": {
             "type": "grass",
-            "variant": 0,
+            "variant": 4,
             "pos": [
                 42,
                 -9
@@ -3346,7 +3138,7 @@
         },
         "45;-10": {
             "type": "grass",
-            "variant": 0,
+            "variant": 6,
             "pos": [
                 45,
                 -10
@@ -3362,7 +3154,7 @@
         },
         "43;-10": {
             "type": "grass",
-            "variant": 0,
+            "variant": 4,
             "pos": [
                 43,
                 -10
@@ -3386,7 +3178,7 @@
         },
         "45;-11": {
             "type": "grass",
-            "variant": 0,
+            "variant": 2,
             "pos": [
                 45,
                 -11
@@ -3394,7 +3186,7 @@
         },
         "46;-10": {
             "type": "grass",
-            "variant": 0,
+            "variant": 2,
             "pos": [
                 46,
                 -10
@@ -3402,7 +3194,7 @@
         },
         "46;-9": {
             "type": "grass",
-            "variant": 0,
+            "variant": 6,
             "pos": [
                 46,
                 -9
@@ -3415,7 +3207,184 @@
                 47,
                 -9
             ]
+        },
+        "29;-3": {
+            "type": "portal up",
+            "variant": 2,
+            "pos": [
+                29,
+                -3
+            ]
+        },
+        "29;-2": {
+            "type": "portal down",
+            "variant": 2,
+            "pos": [
+                29,
+                -2
+            ]
+        },
+        "10;4": {
+            "type": "grass",
+            "variant": 0,
+            "pos": [
+                10,
+                4
+            ]
+        },
+        "9;4": {
+            "type": "grass",
+            "variant": 0,
+            "pos": [
+                9,
+                4
+            ]
+        },
+        "70;-2": {
+            "type": "spike",
+            "variant": 0,
+            "pos": [
+                70,
+                -2
+            ]
+        },
+        "74;-4": {
+            "type": "spike",
+            "variant": 0,
+            "pos": [
+                74,
+                -4
+            ]
+        },
+        "160;-3": {
+            "type": "finish up",
+            "variant": 0,
+            "pos": [
+                160,
+                -3
+            ]
+        },
+        "160;-2": {
+            "type": "finish down",
+            "variant": 0,
+            "pos": [
+                160,
+                -2
+            ]
+        },
+        "74;-3": {
+            "type": "spike",
+            "variant": 0,
+            "pos": [
+                74,
+                -3
+            ]
+        },
+        "70;-3": {
+            "type": "spike",
+            "variant": 0,
+            "pos": [
+                70,
+                -3
+            ]
+        },
+        "71;-1": {
+            "type": "spike",
+            "variant": 0,
+            "pos": [
+                71,
+                -1
+            ]
+        },
+        "73;-5": {
+            "type": "spike",
+            "variant": 0,
+            "pos": [
+                73,
+                -5
+            ]
+        },
+        "73;-4": {
+            "type": "spike",
+            "variant": 0,
+            "pos": [
+                73,
+                -4
+            ]
+        },
+        "71;-2": {
+            "type": "spike",
+            "variant": 0,
+            "pos": [
+                71,
+                -2
+            ]
+        },
+        "76;-1": {
+            "type": "spike",
+            "variant": 0,
+            "pos": [
+                76,
+                -1
+            ]
+        },
+        "76;-2": {
+            "type": "spike",
+            "variant": 0,
+            "pos": [
+                76,
+                -2
+            ]
+        },
+        "77;-1": {
+            "type": "spike",
+            "variant": 0,
+            "pos": [
+                77,
+                -1
+            ]
+        },
+        "77;-2": {
+            "type": "spike",
+            "variant": 0,
+            "pos": [
+                77,
+                -2
+            ]
+        },
+        "77;-3": {
+            "type": "spike",
+            "variant": 0,
+            "pos": [
+                77,
+                -3
+            ]
         }
     },
-    "offgrid": []
+    "offgrid": [
+        {
+            "type": "decor",
+            "variant": 0,
+            "pos": [
+                7.375,
+                3.0416666666666665
+            ]
+        },
+        {
+            "type": "decor",
+            "variant": 0,
+            "pos": [
+                11.958333333333334,
+                3.0
+            ]
+        },
+        {
+            "type": "decor",
+            "variant": 0,
+            "pos": [
+                10.770833333333334,
+                3.0
+            ]
+        }
+    ]
 }

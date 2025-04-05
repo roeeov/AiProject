@@ -6,7 +6,7 @@ from scripts.utils import load_image, load_images, Animation
 from scripts.player import Player
 from scripts.tilemap import Tilemap
 from scripts.clouds import Clouds
-from constants import TILE_SIZE, DISPLAY_SIZE, PLAYERS_IMAGE_SIZE, GAMEMODES, GRAVITY_GAMEMODES
+from scripts.constants import *
 
 class Game:
     def __init__(self, display):
@@ -20,12 +20,16 @@ class Game:
         self.tilemap.load('map.json')
         IMGscale = (self.tilemap.tile_size, self.tilemap.tile_size)
 
+        self.buttons = []
+        #add menu button here
+
         self.assets = {
             'decor': load_images('tiles/decor', scale=IMGscale),
             'grass': load_images('tiles/grass', scale=IMGscale),
             'stone': load_images('tiles/stone', scale=IMGscale),
             'portal': load_images('tiles/portal', scale=(IMGscale[0], IMGscale[1]*2)),
             'spike': load_images('tiles/spike', scale=IMGscale),
+            'finish':load_images('tiles/finish', scale=(IMGscale[0], IMGscale[1]*2)),
             'background': load_image('background.png', scale=DISPLAY_SIZE),
             'clouds': load_images('clouds'),
             'trail': load_image('player/trail/trail.png', scale=(PLAYERS_IMAGE_SIZE['wave'][0]*0.4, PLAYERS_IMAGE_SIZE['wave'][1]*0.4))
@@ -48,6 +52,19 @@ class Game:
         self.scroll = [0, 0]
         self.up = False
         self.player.reset()
+
+    def blitMenu(self):
+        rect_width, rect_height = DISPLAY_SIZE[0]//2, DISPLAY_SIZE[1]//2 # size of the black rectangle
+        black_rect = pygame.Surface((rect_width, rect_height), pygame.SRCALPHA)  # enable per-pixel alpha
+        black_rect.fill((0, 0, 0, 128))  # RGBA, 128 = 50% opacity
+
+        # Position the rectangle in the center of the screen
+        x = (DISPLAY_SIZE[0] - rect_width) // 2
+        y = (DISPLAY_SIZE[1] - rect_height) // 2
+
+        self.display.blit(black_rect, (x, y))
+
+
 
     def run(self):
         
@@ -92,7 +109,8 @@ class Game:
         self.tilemap.render(self.display, offset=render_scroll)
             
         self.player.update(self.tilemap, self.up)
-        self.player.render(self.display, offset=render_scroll)  
+        self.player.render(self.display, offset=render_scroll)
+        if (self.player.finishLevel): self.blitMenu()
 
         # check if the player death animation has ended
         if self.player.respawn: self.reset()

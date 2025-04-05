@@ -1,7 +1,7 @@
 import os
 
 import pygame
-from constants import FONT
+from scripts.constants import *
 BASE_IMG_PATH = 'data/images/'
 
 def load_image(path, scale = None, remove_color = (0, 0, 0)):
@@ -16,6 +16,9 @@ def load_images(path, scale = None, remove_color = (0, 0, 0)):
     for img_name in sorted(os.listdir(BASE_IMG_PATH + path)):
         images.append(load_image(path + '/' + img_name, scale, remove_color))
     return images
+
+def vh(width_precent, height_precent):
+    return (width_precent * DISPLAY_SIZE[0] // 100, height_precent * DISPLAY_SIZE[1] // 100)
         
 
 class Animation:
@@ -52,19 +55,28 @@ class Text():
     
 
 class Button:
-    def __init__(self, text = '', background_color = (255, 255, 255), button_type = '', hover=True, scale_factor=1.2):
-        # Store the Text object
+    def __init__(self, text='', background_color=(255, 255, 255), button_type='', hover=True, scale_factor=1.2, x=None, y=None, image=None):
         self.text = text
         self.background_color = background_color
         self.type = button_type
         self.hover_enabled = hover
         self.scale_factor = scale_factor
+        self.image = image
         
-        # Get the rect from the text object
+        # Set up rectangles
         self.rect = self.text.text_rect.copy()
+        self.padding = 10
         
-        # Create slightly larger rectangle for better clickable area
-        self.padding = 10  # pixels of padding around text
+        # Store position
+        self.original_x = x if x is not None else self.rect.x
+        self.original_y = y if y is not None else self.rect.y
+        self.offset_x, self.offset_y = 0, 0
+        
+        # Set initial position if specified
+        if x is not None or y is not None:
+            self.set_offset(self.offset_x, self.offset_y)
+        
+        # Create clickable area with padding
         self.hover_rect = pygame.Rect(
             self.rect.x - self.padding,
             self.rect.y - self.padding,
@@ -72,10 +84,71 @@ class Button:
             self.rect.height + (self.padding * 2)
         )
         
-        # Store original surfaces for scaling
+        # Store original surfaces
         self.original_text_surface = self.text.text
         
-        # Pre-calculate the scaled text for hover effect
+        # Scale background image if provided
+        if self.image:
+            self.original_image = pygame.transform.scale(
+                self.image, 
+                (self.hover_rect.width, self.hover_rect.height)
+            )
+        else:
+            self.original_image = None
+        
+        # Pre-calculate hover elements
+        self._setup_hover_elements()
+        
+        # Track mouse state
+        self.mouse_pressed = False
+        self.mouse_released = False
+        self.mouse_pos = pygame.mouse.get_pos()
+
+    def set_offset(self, offset_x, offset_y):
+        """Set the position offset of the button"""
+        # Store the new offset
+        self.offset_x = offset_x
+        self.offset_y = offset_y
+        
+        # Calculate absolute positions based on original position plus offset
+        absolute_x = self.original_x + self.offset_x
+        absolute_y = self.original_y + self.offset_y
+        
+        # Update text rect position (not adding to existing position to avoid accumulation)
+        self.rect.x = absolute_x
+        self.rect.y = absolute_y
+        
+        # Update hover rect position using the text rect's position plus padding
+        self.hover_rect.x = self.rect.x - self.padding
+        self.hover_rect.y = self.rect.y - self.padding
+        
+        # Update scaled hover rect if it exists
+        if hasattr(self, 'scaled_hover_rect'):
+            # Center the scaled hover rect around the same center as the regular hover rect
+            center_x, center_y = self.hover_rect.center
+            self.scaled_hover_rect.center = (center_x, center_y)
+
+    def set_image(self, image):
+        """Set or change the button's background image"""
+        self.image = image
+        if self.image:
+            # Scale to the hover_rect size
+            self.original_image = pygame.transform.scale(
+                self.image, 
+                (self.hover_rect.width, self.hover_rect.height)
+            )
+            
+            # Also create the scaled version for hover state
+            self.scaled_image = pygame.transform.scale(
+                self.image,
+                (self.scaled_hover_rect.width, self.scaled_hover_rect.height)
+            )
+        else:
+            self.original_image = None
+            self.scaled_image = None
+
+    def _setup_hover_elements(self):
+        # Create scaled text surface
         scaled_width = int(self.original_text_surface.get_width() * self.scale_factor)
         scaled_height = int(self.original_text_surface.get_height() * self.scale_factor)
         self.scaled_text_surface = pygame.transform.scale(
@@ -83,10 +156,10 @@ class Button:
             (scaled_width, scaled_height)
         )
         
-        # Pre-calculate the scaled hover rect
+        # Create scaled hover rectangle
+        center_x, center_y = self.hover_rect.center
         hover_width = int(self.hover_rect.width * self.scale_factor)
         hover_height = int(self.hover_rect.height * self.scale_factor)
-        center_x, center_y = self.hover_rect.center
         self.scaled_hover_rect = pygame.Rect(
             center_x - hover_width // 2,
             center_y - hover_height // 2,
@@ -94,55 +167,50 @@ class Button:
             hover_height
         )
         
-        # Track mouse button state
-        self.mouse_pressed = False
-        self.mouse_released = False
-        
-        # Debug flag - set to True to see collision boxes
-        self.debug = False
+        # Scale background image for hover state if available
+        if self.image:
+            self.scaled_image = pygame.transform.scale(
+                self.image,
+                (self.scaled_hover_rect.width, self.scaled_hover_rect.height)
+            )
+        else:
+            self.scaled_image = None
 
     def update(self, mouse_pressed=None, mouse_released=None):
-        # This method should be called every frame before rendering
-        # Update mouse position check
-        
         self.mouse_pos = pygame.mouse.get_pos()
-        
-        # Update mouse button state if provided
         if mouse_pressed is not None:
             self.mouse_pressed = mouse_pressed
         if mouse_released is not None:
             self.mouse_released = mouse_released
         
     def is_hovered(self):
-        # Use the hover_rect (with padding) for better hit detection
         return self.hover_rect.collidepoint(self.mouse_pos)
     
     def is_clicked(self):
-        """Returns True if the button was clicked (pressed and released while hovering)"""
         return self.is_hovered() and self.mouse_released
 
     def blit(self, display):
-        # Always update mouse position before rendering
         self.update()
-        
-        # Check if we're hovering
         hovering = self.is_hovered() and self.hover_enabled
         
+        rect_to_draw = self.scaled_hover_rect if hovering else self.hover_rect
+        
+        # Draw background (either image or color)
+        if hovering and self.scaled_image:
+            display.blit(self.scaled_image, self.scaled_hover_rect)
+        elif self.original_image:
+            display.blit(self.original_image, self.hover_rect)
+        else:
+            pygame.draw.rect(display, self.background_color, rect_to_draw)
+        
+        # Draw text
         if hovering:
-            # Draw hover state
-            pygame.draw.rect(display, self.background_color, self.scaled_hover_rect)
-            
-            # Center the scaled text in the scaled rect
             scaled_text_rect = self.scaled_text_surface.get_rect(center=self.scaled_hover_rect.center)
             display.blit(self.scaled_text_surface, scaled_text_rect)
         else:
-            # Draw normal state
-            pygame.draw.rect(display, self.background_color, self.hover_rect)
             display.blit(self.original_text_surface, self.rect)
         
         # Debug visualization
-        if self.debug:
-            # Draw collision detection box in red
+        if SHOW_BUTTON_HITBOX:
             pygame.draw.rect(display, (255, 0, 0), self.hover_rect, 1)
-            # Draw a dot at mouse position
             pygame.draw.circle(display, (0, 255, 0), self.mouse_pos, 3)

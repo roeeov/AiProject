@@ -4,7 +4,7 @@ import pygame
 
 from scripts.utils import load_images, load_image
 from scripts.tilemap import Tilemap
-from constants import *
+from scripts.constants import *
 
 class Editor:
     def __init__(self):
@@ -47,14 +47,14 @@ class Editor:
             'stone': load_images('tiles/stone', scale=IMGscale),
             'portal': load_images('tiles/portal', scale=(IMGscale[0], IMGscale[1]*2)),
             'spike': load_images('tiles/spike', scale=IMGscale),
+            'finish':load_images('tiles/finish', scale=(IMGscale[0], IMGscale[1]*2))
         }
     
     def deleteGridBlock(self, tile_pos):
         tile_loc = str(tile_pos[0]) + ';' + str(tile_pos[1])
-        print(tile_loc in self.tilemap.tilemap)
         if tile_loc in self.tilemap.tilemap:
             tile = self.tilemap.tilemap[tile_loc]
-            if tile['type'].split()[0] == 'portal':
+            if tile['type'].split()[0] in {'portal', 'finish'}:
                 if tile['type'].split()[1] == 'up':
                     if str(tile_pos[0]) + ';' + str(tile_pos[1]+1) in self.tilemap.tilemap:
                         del self.tilemap.tilemap[str(tile_pos[0]) + ';' + str(tile_pos[1]+1)]
@@ -90,11 +90,12 @@ class Editor:
             
             if self.clicking and self.ongrid:
                 tile_type = self.tile_list[self.tile_group]
-                if tile_type != 'portal':
-                    self.placeGridBlock(tile_pos, tile_type)
-                else:
+                
+                if tile_type in {'portal', 'finish'}:
                     self.placeGridBlock(tile_pos, tile_type + ' up')
                     self.placeGridBlock((tile_pos[0], tile_pos[1]+1), tile_type + ' down')
+                else:
+                    self.placeGridBlock(tile_pos, tile_type)
 
             if self.right_clicking:
 

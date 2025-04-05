@@ -1,7 +1,7 @@
 import json
 import numpy as np
 import pygame
-from constants import *
+from scripts.constants import *
 
 AUTOTILE_MAP = {
     tuple(sorted([(1, 0), (0, 1)])): 0,
@@ -55,11 +55,28 @@ class Tilemap:
                 rects.append(pygame.Rect(tile['pos'][0] * self.tile_size, tile['pos'][1] * self.tile_size, self.tile_size, self.tile_size))
         return rects
     
+
     def interactive_rects_around(self, pos):
         tiles = []
         for tile in self.tiles_around(pos):
             if tile['type'].split()[0] in INTERACTIVE_TILES:
-                tiles.append((pygame.Rect(tile['pos'][0] * self.tile_size, tile['pos'][1] * self.tile_size, self.tile_size, self.tile_size), (tile['type'].split()[0], tile['variant'])))
+                match tile['type'].split()[0]:
+                    case 'portal' | 'finish':
+                        tiles.append((pygame.Rect(tile['pos'][0] * self.tile_size, tile['pos'][1] * self.tile_size, self.tile_size, self.tile_size), (tile['type'].split()[0], tile['variant'])))
+                    case 'spike':
+                        # Calculate the centered spike hitbox exactly like in render method
+                        colrect = pygame.Rect(
+                            self.tile_size * tile['pos'][0], 
+                            self.tile_size * tile['pos'][1], 
+                            int(self.tile_size*SPIKE_SIZE[0]), 
+                            int(self.tile_size*SPIKE_SIZE[1])
+                        )
+                        # Center the rect within the tile
+                        colrect.center = (
+                            self.tile_size * tile['pos'][0] + self.tile_size//2, 
+                            self.tile_size * tile['pos'][1] + self.tile_size//2
+                        )
+                        tiles.append((colrect, (tile['type'], tile['variant'])))
         return tiles
     
     def autotile(self):
@@ -84,5 +101,15 @@ class Tilemap:
                 loc = str(x) + ';' + str(y)
                 if loc in self.tilemap:
                     tile = self.tilemap[loc]
-                    if tile['type'] != 'portal down':
+                    if tile['type'] not in {'portal down', 'finish down'}:
                         surf.blit(self.game.assets[tile['type'].split()[0]][tile['variant']], (tile['pos'][0] * self.tile_size - offset[0], tile['pos'][1] * self.tile_size - offset[1]))
+                    if SHOW_SPIKE_HITBOX and tile['type'] == 'spike':
+                        colrect = pygame.Rect(
+                            self.tile_size * tile['pos'][0], 
+                            self.tile_size * tile['pos'][1], 
+                            int(self.tile_size*SPIKE_SIZE[0]), 
+                            int(self.tile_size*SPIKE_SIZE[1])
+                        )
+                        colrect.center = (tile['pos'][0] * self.tile_size - offset[0] + self.tile_size//2, 
+                                        tile['pos'][1] * self.tile_size - offset[1] + self.tile_size//2)
+                        pygame.draw.rect(surf, (255, 0, 0), colrect)

@@ -1,4 +1,4 @@
-from constants import *
+from scripts.constants import *
 from collections import deque
 import numpy as np
 import pygame
@@ -17,9 +17,11 @@ class Player:
         self.pos = PLAYER_POS.copy()
         self.Yvelocity = 0
         self.collisions = {'up': False, 'down': False, 'right': False}
+        self.hitbox_collisions = {'up': False, 'down': False, 'right': False}
         self.input = {'hold': False, 'click': False, 'buffer': False}
         self.grounded = False
         self.death = False # is the player dead
+        self.finishLevel = False # did the player reach the finish
         self.respawn = False # is deth animation over and need to respawn
         self.gravityDirection = 'down'
         self.setGameMode('cube')
@@ -39,7 +41,6 @@ class Player:
         self.checkDeath()
 
         if self.death:
-            self.deg = 0
             self.set_action('death')
             if self.animation.done: self.respawn = True 
             return
@@ -53,37 +54,55 @@ class Player:
         movement = (PLAYER_SPEED, 0)
         self.collisions = {'up': False, 'down': False, 'right': False}
 
-        if self.death: frame_movement = (0, 0)
+        if self.death or self.finishLevel: frame_movement = (0, 0)
         else: frame_movement = (movement[0], movement[1] + self.Yvelocity)
         
 
         # Check for collisions and update player position
         self.pos[0] += frame_movement[0]
         entity_rect = self.rect()
+        hitbox = self.hitbox_rect()
         for rect in tilemap.physics_rects_around(self.pos):
             if entity_rect.colliderect(rect):
-                entity_rect.right = rect.left
+                #entity_rect.right = rect.left
                 self.collisions['right'] = True
+                if hitbox.colliderect(rect):
+                    self.hitbox_collisions['right'] = True
                 self.pos[0] = entity_rect.x
 
         self.pos[1] += frame_movement[1]
         entity_rect = self.rect()
+        hitbox = self.hitbox_rect()
         for rect in tilemap.physics_rects_around(self.pos):
             if entity_rect.colliderect(rect):
                 if frame_movement[1] > 0:
                     entity_rect.bottom = rect.top
                     self.collisions['down'] = True
+                    if hitbox.colliderect(rect):
+                        self.hitbox_collisions['down'] = True
                 if frame_movement[1] < 0:
                     entity_rect.top = rect.bottom
                     self.collisions['up'] = True
-                self.pos[1] = entity_rect.y
+                    if hitbox.colliderect(rect):
+                        self.hitbox_collisions['up'] = True
+                if not self.collisions['right'] and not self.gamemode == 'wave':
+                    self.pos[1] = entity_rect.y
 
+        entity_rect = self.rect()
+        hitbox = self.hitbox_rect()
         for rect, (type, variant) in tilemap.interactive_rects_around(self.pos):
-            if entity_rect.colliderect(rect):
+            if hitbox.colliderect(rect):
                 match type:
                     case 'portal':
                         game_mode = {0 : 'ball', 1 : 'cube', 2 : 'wave'}[variant]
                         self.setGameMode(game_mode)
+                    case 'spike':
+                        self.death = True
+                    case 'finish':
+                        self.finishLevel = True
+            if entity_rect.colliderect(rect):
+                pass
+            
 
         self.updateVelocity()
 
@@ -97,7 +116,8 @@ class Player:
         # Check if the player is on the ground
         self.grounded = self.air_time <= 4
    
-        self.updateVisuals(just_landed)
+        if not self.finishLevel and not self.death:
+            self.updateVisuals(just_landed)
 
     def render(self, surf, offset=(0, 0)):
 
@@ -123,15 +143,33 @@ class Player:
         # Draw the rotated image
         surf.blit(flipped_img, img_rect)
 
+        if DRAW_PLAYER_HITBOX:
+            colrect = self.rect()
+            colrect.center=(self.pos[0] + self.size[0] // 2 - offset[0],
+                                                    self.pos[1] + self.size[1] // 2 - offset[1])
+            pygame.draw.rect(surf, (0, 0, 255), colrect)
+        
+            colrect = self.hitbox_rect()
+            colrect.center=(self.pos[0] + self.size[0] // 2 - offset[0],
+                                                    self.pos[1] + self.size[1] // 2 - offset[1])
+            pygame.draw.rect(surf, (0, 255, 0), colrect)
+
 
     def rect(self):
         return pygame.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1])
+    
+    def hitbox_rect(self):
+        return pygame.Rect(self.pos[0] + self.size[0]*(1-PLAYER_HITBOX)//2,
+                           self.pos[1] + self.size[1]*(1-PLAYER_HITBOX)//2,
+                           self.size[0]*PLAYER_HITBOX, self.size[1]*PLAYER_HITBOX)
 
     def setGameMode(self, gamemode):
         if self.gamemode == gamemode:
             return
         self.gamemode = gamemode
         self.size = PLAYERS_SIZE[self.gamemode]
+        self.collisions = {'up': False, 'down': False, 'right': False}
+        self.hitbox_collisions = {'up': False, 'down': False, 'right': False}
         self.deg = 0
         self.action = ''
         self.set_action('run')
@@ -143,10 +181,10 @@ class Player:
             self.animation = self.game.assets['player/' + self.gamemode + '/' + self.action].copy()
 
     def checkDeath(self):
-        if self.collisions['right']: 
+        if self.hitbox_collisions['right']: 
             self.death = True
         if self.gamemode == 'wave':
-            if self.collisions['up'] or self.collisions['down']:
+            if self.hitbox_collisions['up'] or self.hitbox_collisions['down']:
                 self.death = True
 
     def updateVelocity(self):
