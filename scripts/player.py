@@ -54,7 +54,7 @@ class Player:
         movement = (PLAYER_SPEED, 0)
         self.collisions = {'up': False, 'down': False, 'right': False}
 
-        if self.death or self.finishLevel: frame_movement = (0, 0)
+        if self.death: frame_movement = (0, 0)
         else: frame_movement = (movement[0], movement[1] + self.Yvelocity)
         
 
@@ -205,7 +205,7 @@ class Player:
                     self.air_time = 5
                     self.Yvelocity = jumpVel
                     
-                if self.collisions['down'] or self.collisions['up']:
+                if (self.collisions['down'] or self.collisions['up']) and not self.collisions['right']:
                     self.Yvelocity = 0
                 else:
                     self.Yvelocity = max(-MAX_VELOCITY['cube'], min(self.Yvelocity + gravity, MAX_VELOCITY['cube']))
@@ -222,7 +222,7 @@ class Player:
 
                 gravity = GRAVITY * {'down': 1, 'up': -1}[self.gravityDirection]
 
-                if self.collisions['down'] or self.collisions['up']:
+                if (self.collisions['down'] or self.collisions['up']) and not self.collisions['right']:
                     self.Yvelocity = 0
                 else:
                     self.Yvelocity = max(-MAX_VELOCITY['ball'], min(self.Yvelocity + gravity, MAX_VELOCITY['ball']))

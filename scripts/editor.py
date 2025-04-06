@@ -167,7 +167,7 @@ class Editor:
                     if event.key == pygame.K_t:
                         tile_map.autotile()
                     if event.key == pygame.K_o:
-                        path = f"data/maps/{map_manager.current_map_id}.json"
+                        path = map_manager.getMapPath()
                         tile_map.save(path)
                     if event.key in {pygame.K_LSHIFT, pygame.K_RSHIFT}:
                         self.shift = True

@@ -14,7 +14,7 @@ PLAYER_POS = [50, 50]
 # Needs to be changed for every new gamemode added
 GAMEMODES= {'cube', 'wave', 'ball'}
 GRAVITY_GAMEMODES = {'cube', 'ball'}
-PLAYERS_SIZE = {'cube': (TILE_SIZE, TILE_SIZE), 'wave': (TILE_SIZE*0.5, TILE_SIZE*0.5), 'ball': (TILE_SIZE, TILE_SIZE)}
+PLAYERS_SIZE = {'cube': (TILE_SIZE*9.5//10, TILE_SIZE*9.5//10), 'wave': (TILE_SIZE*5//10, TILE_SIZE*5//10), 'ball': (TILE_SIZE*9.5//10, TILE_SIZE*9.5//10)}
 PLAYERS_IMAGE_SIZE = {
         'cube': PLAYERS_SIZE['cube'],
         'wave': (PLAYERS_SIZE['wave'][0]*1.4, PLAYERS_SIZE['wave'][1]*1.4),
@@ -36,5 +36,5 @@ LEVEL_SELECTOR_SCROLL = 40
 #debugging
 DRAW_PLAYER_HITBOX = False
 SHOW_BUTTON_HITBOX = False
-SHOW_SPIKE_HITBOX = True
+SHOW_SPIKE_HITBOX = False
 SHOW_FPS_COUNTER = False

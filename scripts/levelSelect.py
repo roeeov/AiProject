@@ -36,6 +36,9 @@ class LevelSelect:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    game_state_manager.returnToPrevState()
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 mouse_pressed = True
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
@@ -100,6 +103,9 @@ class LevelPage:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    game_state_manager.returnToPrevState()
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 mouse_pressed = True
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:

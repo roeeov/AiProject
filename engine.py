@@ -5,7 +5,7 @@ from scripts.menu import Menu
 from scripts.levelSelect import LevelSelect, LevelPage
 from scripts.gameStateManager import game_state_manager
 from scripts.utils import Text
-from editor import Editor
+from scripts.editor import Editor
 
 class Engine:
 

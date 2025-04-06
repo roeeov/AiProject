@@ -7,6 +7,7 @@ from scripts.player import Player
 from scripts.tilemap import tile_map
 from scripts.clouds import Clouds
 from scripts.constants import *
+from scripts.gameStateManager import game_state_manager
 
 class Game:
     def __init__(self, display):
@@ -16,8 +17,23 @@ class Game:
         self.input = {'w': False, 'space': False, 'up_arrow': False, 'mouse': False}
         self.up = False
 
+        self.openMenu = False
         self.buttons = []
-        #add menu button here
+
+        back_text = Text('menu', pos = vh(60, 55), size=80)
+        back_button = Button(back_text, (0 ,255, 0), button_type='menu')
+        self.buttons.append(back_button)
+
+        edit_text = Text('resume', pos = vh(40, 55), size=80)
+        edit_button = Button(edit_text, (0 ,255, 0), button_type='resume')
+        self.buttons.append(edit_button)
+
+        reset_text = Text('play again', pos = vh(50, 70), size=80)
+        reset_button = Button(reset_text, (0 ,255, 0), button_type='reset')
+        self.buttons.append(reset_button)
+
+        pause_text = Text('pause', pos = (50, 50), size=30)
+        self.pause_button = Button(pause_text, (0 ,255, 0), button_type='prev')
 
         self.assets = load_assets()
         for gamemode in GAMEMODES:
@@ -40,8 +56,8 @@ class Game:
         self.up = False
         self.player.reset()
 
-    def blitMenu(self):
-        rect_width, rect_height = DISPLAY_SIZE[0]//2, DISPLAY_SIZE[1]//2 # size of the black rectangle
+    def blitMenu(self, mouse_pressed, mouse_released):
+        rect_width, rect_height = DISPLAY_SIZE[0]//2, DISPLAY_SIZE[1]//3*2 # size of the black rectangle
         black_rect = pygame.Surface((rect_width, rect_height), pygame.SRCALPHA)  # enable per-pixel alpha
         black_rect.fill((0, 0, 0, 128))  # RGBA, 128 = 50% opacity
 
@@ -51,14 +67,67 @@ class Game:
 
         self.display.blit(black_rect, (x, y))
 
+        if self.player.finishLevel:
+                
+                finish_text = Text("Level Complete!", vh(50, 30), color=(255, 255, 255))
+                finish_text.blit(self.display)
+
+                for button in self.buttons:
+
+                    if button.type == 'menu':
+                        button.set_offset(vh(-10, -5)[0], vh(-10, -5)[1])
+                        button.update(mouse_pressed, mouse_released)
+                        if button.is_clicked():
+                                self.openMenu = False
+                                self.reset()
+                                game_state_manager.returnToPrevState()
+                        button.blit(self.display)
+
+                    if button.type == 'reset':
+                        button.update(mouse_pressed, mouse_released)
+                        if button.is_clicked():
+                                self.openMenu = False
+                                self.reset()
+                        button.blit(self.display)
+        else:
+
+            pause_text = Text("Pause Menu", vh(50, 30), color=(255, 255, 255))
+            pause_text.blit(self.display)
+
+            for button in self.buttons:  
+
+                if button.type == 'menu':
+                    button.set_offset(0, 0)
+                    button.update(mouse_pressed, mouse_released)
+                    if button.is_clicked():
+                            self.openMenu = False
+                            self.reset()
+                            game_state_manager.returnToPrevState()
+                    button.blit(self.display)
+
+                if button.type == 'resume':
+                    button.update(mouse_pressed, mouse_released)
+                    if button.is_clicked():
+                            self.openMenu = False
+                    button.blit(self.display)
+                
+
 
 
     def run(self):
         
+        mouse_pressed = False
+        mouse_released = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                mouse_pressed = True
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                mouse_released = True
+
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
                     self.input['up_arrow'] = True
@@ -67,7 +136,10 @@ class Game:
                 if event.key == pygame.K_SPACE:
                     self.input['space'] = True  
                 if event.key == pygame.K_r:
-                    self.reset()
+                    if not self.openMenu:
+                        self.reset()
+                if event.key == pygame.K_ESCAPE:
+                    self.openMenu = True
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_UP:
@@ -95,9 +167,17 @@ class Game:
             
         tile_map.render(self.display, offset=render_scroll)
             
-        self.player.update(tile_map, self.up)
+        self.pause_button.update(mouse_pressed, mouse_released)
+        if self.pause_button.is_clicked():
+                self.openMenu = True
+        self.pause_button.blit(self.display)
+        
+        if not self.openMenu: self.player.update(tile_map, self.up)
         self.player.render(self.display, offset=render_scroll)
-        if (self.player.finishLevel): self.blitMenu()
+        if (self.player.finishLevel): self.openMenu = True
+
+
+        if self.openMenu: self.blitMenu(mouse_pressed, mouse_released)
 
         # check if the player death animation has ended
         if self.player.respawn: self.reset()

@@ -11,15 +11,17 @@ class MapManager:
         self.update_map_dict()
 
     def update_map_dict(self):
-
         self.json_dict = {}
-        folder_path = "data/maps"
+        folder_path = "data/onlineMaps"
         for filename in sorted(os.listdir(folder_path)):
             if filename.endswith(".json"):
                 file_path = os.path.join(folder_path, filename)
                 with open(file_path, 'r', encoding='utf-8') as file:
                     data = json.load(file)
                     self.json_dict[data["info"]["id"]] = data
+
+    def getMapPath(self):
+        return f"data/onlineMaps/{self.current_map_id}.json"
 
     def getMapDict(self):
         self.update_map_dict()
@@ -49,7 +51,7 @@ class MapManager:
         # # Write selected data to new file
         # with open(dest_path, 'w') as f:
         #     json.dump({'info': map_info, 'tilemap': map_tilemap, 'offgrid': map_offgrid}, f, indent=4)
-        map_path = f"data/maps/{self.current_map_id}.json"
+        map_path = self.getMapPath()
         tile_map.load(map_path)
                 
 
