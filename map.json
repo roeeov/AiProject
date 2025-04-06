@@ -1,4 +1,10 @@
 {
+    "info": {
+        "name": "begginers park",
+        "creator": "roeeov",
+        "difficulty": "easy",
+        "id": "8709856889"
+    },
     "tilemap": {
         "11;4": {
             "type": "grass",

@@ -2,9 +2,9 @@ import sys
 
 import pygame
 
-from scripts.utils import load_image, load_images, Animation
+from scripts.utils import *
 from scripts.player import Player
-from scripts.tilemap import Tilemap
+from scripts.tilemap import tile_map
 from scripts.clouds import Clouds
 from scripts.constants import *
 
@@ -15,25 +15,12 @@ class Game:
         
         self.input = {'w': False, 'space': False, 'up_arrow': False, 'mouse': False}
         self.up = False
-        
-        self.tilemap = Tilemap(self, tile_size = TILE_SIZE)
-        self.tilemap.load('map.json')
-        IMGscale = (self.tilemap.tile_size, self.tilemap.tile_size)
 
         self.buttons = []
         #add menu button here
 
-        self.assets = {
-            'decor': load_images('tiles/decor', scale=IMGscale),
-            'grass': load_images('tiles/grass', scale=IMGscale),
-            'stone': load_images('tiles/stone', scale=IMGscale),
-            'portal': load_images('tiles/portal', scale=(IMGscale[0], IMGscale[1]*2)),
-            'spike': load_images('tiles/spike', scale=IMGscale),
-            'finish':load_images('tiles/finish', scale=(IMGscale[0], IMGscale[1]*2)),
-            'background': load_image('background.png', scale=DISPLAY_SIZE),
-            'clouds': load_images('clouds'),
-            'trail': load_image('player/trail/trail.png', scale=(PLAYERS_IMAGE_SIZE['wave'][0]*0.4, PLAYERS_IMAGE_SIZE['wave'][1]*0.4))
-        }
+        self.assets = load_assets()
+        tile_map.assets = self.assets
         for gamemode in GAMEMODES:
             IMG_scale = PLAYERS_IMAGE_SIZE[gamemode]
             base_path = 'player/' + gamemode
@@ -106,9 +93,9 @@ class Game:
         self.clouds.update()
         self.clouds.render(self.display, offset=render_scroll)
             
-        self.tilemap.render(self.display, offset=render_scroll)
+        tile_map.render(self.display, offset=render_scroll)
             
-        self.player.update(self.tilemap, self.up)
+        self.player.update(tile_map, self.up)
         self.player.render(self.display, offset=render_scroll)
         if (self.player.finishLevel): self.blitMenu()
 

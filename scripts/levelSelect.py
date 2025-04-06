@@ -111,7 +111,8 @@ class LevelPage:
                 if button.type == 'prev':
                     game_state_manager.returnToPrevState()
                 elif button.type == 'play':
-                    print('play')
+                    map_manager.loadMap()
+                    game_state_manager.setState('game')
                 elif button.type == 'edit':
                     print('edit')
             button.blit(self.display)

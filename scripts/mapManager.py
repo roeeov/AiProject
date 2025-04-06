@@ -1,12 +1,13 @@
 import json
 import os
+from scripts.tilemap import tile_map
 
 class MapManager:
 
     def __init__(self):
 
         self.json_dict = {}
-        self.current_map_id = ""
+        self.current_map_id = ''
         self.update_map_dict()
 
     def update_map_dict(self):
@@ -34,6 +35,22 @@ class MapManager:
         return self.json_dict[id]
 
     def loadMap(self):
-        pass
+        # source_path = f"data/maps/{self.current_map_id}.json"
+        # dest_path = "map.json"
+
+        # # Load map data
+        # with open(source_path, 'r') as f:
+        #     map_data = json.load(f)
+
+        # map_info = map_data["info"]
+        # map_tilemap = map_data["tilemap"]
+        # map_offgrid = map_data["offgrid"]
+
+        # # Write selected data to new file
+        # with open(dest_path, 'w') as f:
+        #     json.dump({'info': map_info, 'tilemap': map_tilemap, 'offgrid': map_offgrid}, f, indent=4)
+        map_path = f"data/maps/{self.current_map_id}.json"
+        tile_map.load(map_path)
+                
 
 map_manager = MapManager()

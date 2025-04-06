@@ -20,8 +20,9 @@ PHYSICS_TILES = {'grass', 'stone'}
 AUTOTILE_TYPES = {'grass', 'stone'}
 
 class Tilemap:
-    def __init__(self, game, tile_size=16):
-        self.game = game
+    def __init__(self, assets=None, tile_size=16):
+
+        self.assets = assets
         self.tile_size = tile_size
         self.tilemap = {}
         self.offgrid_tiles = []
@@ -36,8 +37,11 @@ class Tilemap:
         return tiles
     
     def save(self, path):
+        f = open(path, 'r')
+        info_data = json.load(f)['info']
+        f.close()
         f = open(path, 'w')
-        json.dump({'tilemap': self.tilemap, 'offgrid': self.offgrid_tiles}, f, indent=4)
+        json.dump({'info': info_data, 'tilemap': self.tilemap, 'offgrid': self.offgrid_tiles}, f, indent=4)
         f.close()
         
     def load(self, path):
@@ -94,7 +98,7 @@ class Tilemap:
 
     def render(self, surf, offset=(0, 0)):
         for tile in self.offgrid_tiles:
-            surf.blit(self.game.assets[tile['type']][tile['variant']], (tile['pos'][0] * self.tile_size - offset[0], tile['pos'][1] * self.tile_size - offset[1]))
+            surf.blit(self.assets[tile['type']][tile['variant']], (tile['pos'][0] * self.tile_size - offset[0], tile['pos'][1] * self.tile_size - offset[1]))
             
         for x in range(offset[0] // self.tile_size, (offset[0] + surf.get_width()) // self.tile_size + 1):
             for y in range(offset[1] // self.tile_size, (offset[1] + surf.get_height()) // self.tile_size + 1):
@@ -102,7 +106,7 @@ class Tilemap:
                 if loc in self.tilemap:
                     tile = self.tilemap[loc]
                     if tile['type'] not in {'portal down', 'finish down'}:
-                        surf.blit(self.game.assets[tile['type'].split()[0]][tile['variant']], (tile['pos'][0] * self.tile_size - offset[0], tile['pos'][1] * self.tile_size - offset[1]))
+                        surf.blit(self.assets[tile['type'].split()[0]][tile['variant']], (tile['pos'][0] * self.tile_size - offset[0], tile['pos'][1] * self.tile_size - offset[1]))
                     if SHOW_SPIKE_HITBOX and tile['type'] == 'spike':
                         colrect = pygame.Rect(
                             self.tile_size * tile['pos'][0], 
@@ -113,3 +117,6 @@ class Tilemap:
                         colrect.center = (tile['pos'][0] * self.tile_size - offset[0] + self.tile_size//2, 
                                         tile['pos'][1] * self.tile_size - offset[1] + self.tile_size//2)
                         pygame.draw.rect(surf, (255, 0, 0), colrect)
+
+
+tile_map = Tilemap(tile_size=TILE_SIZE)

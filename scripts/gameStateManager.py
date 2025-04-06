@@ -8,6 +8,7 @@ class gameStateManager:
         self.previousStates = deque()
         self.previousStates.append(self.defualtState)
 
+
     def getState(self):
         return self.currentState
     

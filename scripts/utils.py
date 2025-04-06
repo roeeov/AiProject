@@ -17,6 +17,20 @@ def load_images(path, scale = None, remove_color = (0, 0, 0)):
         images.append(load_image(path + '/' + img_name, scale, remove_color))
     return images
 
+def load_assets():
+    IMGscale = (TILE_SIZE, TILE_SIZE)
+    return {
+            'decor': load_images('tiles/decor', scale=IMGscale),
+            'grass': load_images('tiles/grass', scale=IMGscale),
+            'stone': load_images('tiles/stone', scale=IMGscale),
+            'portal': load_images('tiles/portal', scale=(IMGscale[0], IMGscale[1]*2)),
+            'spike': load_images('tiles/spike', scale=IMGscale),
+            'finish':load_images('tiles/finish', scale=(IMGscale[0], IMGscale[1]*2)),
+            'background': load_image('background.png', scale=DISPLAY_SIZE),
+            'clouds': load_images('clouds'),
+            'trail': load_image('player/trail/trail.png', scale=(PLAYERS_IMAGE_SIZE['wave'][0]*0.4, PLAYERS_IMAGE_SIZE['wave'][1]*0.4))
+        }
+
 def vh(width_precent, height_precent):
     return (width_precent * DISPLAY_SIZE[0] // 100, height_precent * DISPLAY_SIZE[1] // 100)
         

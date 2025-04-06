@@ -13,6 +13,7 @@ class Engine:
 
         pygame.display.set_caption('geometry dash')
         self.display = pygame.display.set_mode(DISPLAY_SIZE)
+        
         self.clock = pygame.time.Clock()
         self.game = Game(self.display)
         self.menu = Menu(self.display)
