@@ -5,6 +5,7 @@ from scripts.menu import Menu
 from scripts.levelSelect import LevelSelect, LevelPage
 from scripts.gameStateManager import game_state_manager
 from scripts.utils import Text
+from editor import Editor
 
 class Engine:
 
@@ -19,8 +20,10 @@ class Engine:
         self.menu = Menu(self.display)
         self.level_select = LevelSelect(self.display)
         self.levelPage = LevelPage(self.display)
+        self.editor = Editor(self.display)
 
-        self.state = {'game': self.game, 'menu': self.menu, 'level_select': self.level_select, 'level_page': self.levelPage}
+
+        self.state = {'game': self.game, 'menu': self.menu, 'level_select': self.level_select, 'level_page': self.levelPage, 'edit': self.editor}
 
     def run(self):
         while True:

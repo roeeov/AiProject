@@ -26,6 +26,9 @@ class Tilemap:
         self.tile_size = tile_size
         self.tilemap = {}
         self.offgrid_tiles = []
+
+    def setAssets(self, assets):
+        self.assets = assets
     
     def tiles_around(self, pos):
         tiles = []

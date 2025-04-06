@@ -38,14 +38,14 @@ class LevelSelect:
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 mouse_pressed = True
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                mouse_released = True
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 4:
                 if self.scroll < 0:
                     self.scroll += LEVEL_SELECTOR_SCROLL
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 5:
                 if self.scroll > self.max_scroll:
                     self.scroll -= LEVEL_SELECTOR_SCROLL
-            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                mouse_released = True
 
         for button in self.buttons:
             if button.type != 'prev': button.set_offset(0, self.scroll)
@@ -114,7 +114,8 @@ class LevelPage:
                     map_manager.loadMap()
                     game_state_manager.setState('game')
                 elif button.type == 'edit':
-                    print('edit')
+                    map_manager.loadMap()
+                    game_state_manager.setState('edit')
             button.blit(self.display)
 
         

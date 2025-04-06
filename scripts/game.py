@@ -20,7 +20,6 @@ class Game:
         #add menu button here
 
         self.assets = load_assets()
-        tile_map.assets = self.assets
         for gamemode in GAMEMODES:
             IMG_scale = PLAYERS_IMAGE_SIZE[gamemode]
             base_path = 'player/' + gamemode
@@ -36,6 +35,7 @@ class Game:
         self.scroll = [0, 0]
 
     def reset(self):
+        tile_map.assets = self.assets
         self.scroll = [0, 0]
         self.up = False
         self.player.reset()

@@ -2,29 +2,29 @@ import sys
 
 import pygame
 
-from scripts.utils import load_images, load_image
+from scripts.utils import *
 from scripts.tilemap import tile_map
 from scripts.constants import *
+from scripts.mapManager import map_manager
+from scripts.gameStateManager import game_state_manager
 
 class Editor:
-    def __init__(self):
-        pygame.init()
+    def __init__(self, display):
 
-        pygame.display.set_caption('editor')
-        self.display = pygame.display.set_mode(DISPLAY_SIZE)
-        self.zoom = 10
-        self.clock = pygame.time.Clock()
+        self.display = display
+        #self.display.set_caption('editor')
+        self.bgIMG = load_image('background.png', scale=DISPLAY_SIZE) 
 
-        self.assets = self.reload_assets()
-        self.bgIMG = load_image('background.png', scale=DISPLAY_SIZE)
-        
+        self.resetEditor()
+
+        self.buttons = []
+        prev_text = Text('back', pos = (50, 50), size=30)
+        prev_button = Button(prev_text, (0 ,255, 0), button_type='prev')
+        self.buttons.append(prev_button)
+
+    def resetEditor(self):
+        self.setZoom(10)
         self.movement = [False, False, False, False]
-        
-        
-        try:
-            tile_map.load('map.json')
-        except FileNotFoundError:
-            pass
         
         self.scroll = [0, 0]
         
@@ -39,7 +39,7 @@ class Editor:
 
     def reload_assets(self):
         IMGscale = (tile_map.tile_size, tile_map.tile_size)
-        return {
+        tile_assets = {
             'decor': load_images('tiles/decor', scale=IMGscale),
             'grass': load_images('tiles/grass', scale=IMGscale),
             'stone': load_images('tiles/stone', scale=IMGscale),
@@ -47,6 +47,13 @@ class Editor:
             'spike': load_images('tiles/spike', scale=IMGscale),
             'finish':load_images('tiles/finish', scale=(IMGscale[0], IMGscale[1]*2))
         }
+        tile_map.setAssets(tile_assets)
+        return tile_assets
+    
+    def setZoom(self, zoom):
+        self.zoom = int(zoom)
+        tile_map.tile_size = int(TILE_SIZE * self.zoom // 10)
+        self.assets = self.reload_assets()
     
     def deleteGridBlock(self, tile_pos):
         tile_loc = str(tile_pos[0]) + ';' + str(tile_pos[1])
@@ -66,7 +73,7 @@ class Editor:
         tile_map.tilemap[str(tile_pos[0]) + ';' + str(tile_pos[1])] = {'type': tile_type, 'variant': self.tile_variant, 'pos': tile_pos}
         
     def run(self):
-        while True:
+
             self.display.blit(self.bgIMG, (0, 0))
             
             self.scroll[0] += (self.movement[1] - self.movement[0]) * EDITOR_SCROLL
@@ -106,6 +113,10 @@ class Editor:
                         tile_map.offgrid_tiles.remove(tile)
             
             self.display.blit(current_tile_img, (5, 5))
+
+            mouse_pressed = False
+            mouse_released = False
+    
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -113,6 +124,7 @@ class Editor:
                     
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
+                        mouse_pressed = True
                         self.clicking = True
                         if not self.ongrid:
                             tile_type = self.tile_list[self.tile_group]
@@ -135,9 +147,11 @@ class Editor:
                             self.tile_variant = 0
                 if event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1:
+                        mouse_released = True
                         self.clicking = False
                     if event.button == 3:
                         self.right_clicking = False
+
                         
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_a:
@@ -153,21 +167,16 @@ class Editor:
                     if event.key == pygame.K_t:
                         tile_map.autotile()
                     if event.key == pygame.K_o:
-                        tile_map.save('map.json')
+                        path = f"data/maps/{map_manager.current_map_id}.json"
+                        tile_map.save(path)
                     if event.key in {pygame.K_LSHIFT, pygame.K_RSHIFT}:
                         self.shift = True
                     if event.key == pygame.K_UP:
                         if self.zoom < 20:
-                            self.zoom += 1
-                            self.zoom = int(self.zoom)
-                            tile_map.tile_size = int(TILE_SIZE * self.zoom // 10)
-                            self.assets = self.reload_assets()
+                            self.setZoom(self.zoom + 1)
                     if event.key == pygame.K_DOWN:
                         if self.zoom > 1:
-                            self.zoom -= 1
-                            self.zoom = int(self.zoom)
-                            tile_map.tile_size = int(TILE_SIZE * self.zoom // 10)
-                            self.assets = self.reload_assets()
+                            self.setZoom(self.zoom - 1)
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_a:
                         self.movement[0] = False
@@ -179,8 +188,15 @@ class Editor:
                         self.movement[3] = False
                     if event.key in {pygame.K_LSHIFT, pygame.K_RSHIFT}:
                         self.shift = False
-            
-            pygame.display.update()
-            self.clock.tick(FPS)
 
-Editor().run()
+
+            for button in self.buttons:
+                button.update(mouse_pressed, mouse_released)
+                if button.is_clicked():
+                    if button.type == 'prev':
+                        self.resetEditor()
+                        game_state_manager.returnToPrevState()
+                button.blit(self.display)
+
+
+
