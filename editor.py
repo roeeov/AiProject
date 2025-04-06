@@ -3,7 +3,7 @@ import sys
 import pygame
 
 from scripts.utils import load_images, load_image
-from scripts.tilemap import Tilemap
+from scripts.tilemap import tile_map
 from scripts.constants import *
 
 class Editor:
@@ -14,8 +14,6 @@ class Editor:
         self.display = pygame.display.set_mode(DISPLAY_SIZE)
         self.zoom = 10
         self.clock = pygame.time.Clock()
-        
-        self.tilemap = Tilemap(self, tile_size=TILE_SIZE)
 
         self.assets = self.reload_assets()
         self.bgIMG = load_image('background.png', scale=DISPLAY_SIZE)
@@ -24,7 +22,7 @@ class Editor:
         
         
         try:
-            self.tilemap.load('map.json')
+            tile_map.load('map.json')
         except FileNotFoundError:
             pass
         
@@ -40,7 +38,7 @@ class Editor:
         self.ongrid = True
 
     def reload_assets(self):
-        IMGscale = (self.tilemap.tile_size, self.tilemap.tile_size)
+        IMGscale = (tile_map.tile_size, tile_map.tile_size)
         return {
             'decor': load_images('tiles/decor', scale=IMGscale),
             'grass': load_images('tiles/grass', scale=IMGscale),
@@ -52,20 +50,20 @@ class Editor:
     
     def deleteGridBlock(self, tile_pos):
         tile_loc = str(tile_pos[0]) + ';' + str(tile_pos[1])
-        if tile_loc in self.tilemap.tilemap:
-            tile = self.tilemap.tilemap[tile_loc]
+        if tile_loc in tile_map.tilemap:
+            tile = tile_map.tilemap[tile_loc]
             if tile['type'].split()[0] in {'portal', 'finish'}:
                 if tile['type'].split()[1] == 'up':
-                    if str(tile_pos[0]) + ';' + str(tile_pos[1]+1) in self.tilemap.tilemap:
-                        del self.tilemap.tilemap[str(tile_pos[0]) + ';' + str(tile_pos[1]+1)]
+                    if str(tile_pos[0]) + ';' + str(tile_pos[1]+1) in tile_map.tilemap:
+                        del tile_map.tilemap[str(tile_pos[0]) + ';' + str(tile_pos[1]+1)]
                 else:
-                    if str(tile_pos[0]) + ';' + str(tile_pos[1]-1) in self.tilemap.tilemap:
-                        del self.tilemap.tilemap[str(tile_pos[0]) + ';' + str(tile_pos[1]-1)]
-            del self.tilemap.tilemap[tile_loc]
+                    if str(tile_pos[0]) + ';' + str(tile_pos[1]-1) in tile_map.tilemap:
+                        del tile_map.tilemap[str(tile_pos[0]) + ';' + str(tile_pos[1]-1)]
+            del tile_map.tilemap[tile_loc]
 
     def placeGridBlock(self, tile_pos, tile_type):
         self.deleteGridBlock(tile_pos)
-        self.tilemap.tilemap[str(tile_pos[0]) + ';' + str(tile_pos[1])] = {'type': tile_type, 'variant': self.tile_variant, 'pos': tile_pos}
+        tile_map.tilemap[str(tile_pos[0]) + ';' + str(tile_pos[1])] = {'type': tile_type, 'variant': self.tile_variant, 'pos': tile_pos}
         
     def run(self):
         while True:
@@ -75,16 +73,16 @@ class Editor:
             self.scroll[1] += (self.movement[3] - self.movement[2]) * EDITOR_SCROLL
             render_scroll = (int(self.scroll[0]), int(self.scroll[1]))
             
-            self.tilemap.render(self.display, offset=render_scroll)
+            tile_map.render(self.display, offset=render_scroll)
             
             current_tile_img = self.assets[self.tile_list[self.tile_group]][self.tile_variant].copy()
             current_tile_img.set_alpha(100)
             
             mpos = pygame.mouse.get_pos()
-            tile_pos = (int((mpos[0] + self.scroll[0]) // self.tilemap.tile_size), int((mpos[1] + self.scroll[1]) // self.tilemap.tile_size))
+            tile_pos = (int((mpos[0] + self.scroll[0]) // tile_map.tile_size), int((mpos[1] + self.scroll[1]) // tile_map.tile_size))
             
             if self.ongrid:
-                self.display.blit(current_tile_img, (tile_pos[0] * self.tilemap.tile_size - self.scroll[0], tile_pos[1] * self.tilemap.tile_size - self.scroll[1]))
+                self.display.blit(current_tile_img, (tile_pos[0] * tile_map.tile_size - self.scroll[0], tile_pos[1] * tile_map.tile_size - self.scroll[1]))
             else:
                 self.display.blit(current_tile_img, mpos)
             
@@ -101,11 +99,11 @@ class Editor:
 
                 self.deleteGridBlock(tile_pos)
                     
-                for tile in self.tilemap.offgrid_tiles.copy():
+                for tile in tile_map.offgrid_tiles.copy():
                     tile_img = self.assets[tile['type']][tile['variant']]
-                    tile_r = pygame.Rect(tile['pos'][0] * self.tilemap.tile_size - self.scroll[0], tile['pos'][1] * self.tilemap.tile_size - self.scroll[1], tile_img.get_width(), tile_img.get_height())
+                    tile_r = pygame.Rect(tile['pos'][0] * tile_map.tile_size - self.scroll[0], tile['pos'][1] * tile_map.tile_size - self.scroll[1], tile_img.get_width(), tile_img.get_height())
                     if tile_r.collidepoint(mpos):
-                        self.tilemap.offgrid_tiles.remove(tile)
+                        tile_map.offgrid_tiles.remove(tile)
             
             self.display.blit(current_tile_img, (5, 5))
             for event in pygame.event.get():
@@ -119,8 +117,8 @@ class Editor:
                         if not self.ongrid:
                             tile_type = self.tile_list[self.tile_group]
                             if (tile_type not in PHYSICS_TILES and tile_type not in INTERACTIVE_TILES):
-                                tile_pos = ((mpos[0] + self.scroll[0]) / self.tilemap.tile_size, (mpos[1] + self.scroll[1]) / self.tilemap.tile_size)
-                                self.tilemap.offgrid_tiles.append({'type': self.tile_list[self.tile_group], 'variant': self.tile_variant, 'pos': tile_pos})
+                                tile_pos = ((mpos[0] + self.scroll[0]) / tile_map.tile_size, (mpos[1] + self.scroll[1]) / tile_map.tile_size)
+                                tile_map.offgrid_tiles.append({'type': self.tile_list[self.tile_group], 'variant': self.tile_variant, 'pos': tile_pos})
                     if event.button == 3:
                         self.right_clicking = True
                     if self.shift:
@@ -153,22 +151,22 @@ class Editor:
                     if event.key == pygame.K_g:
                         self.ongrid = not self.ongrid
                     if event.key == pygame.K_t:
-                        self.tilemap.autotile()
+                        tile_map.autotile()
                     if event.key == pygame.K_o:
-                        self.tilemap.save('map.json')
+                        tile_map.save('map.json')
                     if event.key in {pygame.K_LSHIFT, pygame.K_RSHIFT}:
                         self.shift = True
                     if event.key == pygame.K_UP:
                         if self.zoom < 20:
                             self.zoom += 1
                             self.zoom = int(self.zoom)
-                            self.tilemap.tile_size = int(TILE_SIZE * self.zoom // 10)
+                            tile_map.tile_size = int(TILE_SIZE * self.zoom // 10)
                             self.assets = self.reload_assets()
                     if event.key == pygame.K_DOWN:
                         if self.zoom > 1:
                             self.zoom -= 1
                             self.zoom = int(self.zoom)
-                            self.tilemap.tile_size = int(TILE_SIZE * self.zoom // 10)
+                            tile_map.tile_size = int(TILE_SIZE * self.zoom // 10)
                             self.assets = self.reload_assets()
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_a:
