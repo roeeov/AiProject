@@ -11,13 +11,18 @@ class Menu:
 
         self.display = display
 
-        start_text = Text('level select', pos = (DISPLAY_SIZE[0]//2, DISPLAY_SIZE[1]//2), size=30)
-        start_button = Button(start_text, (59, 189, 30), 'level_select')
+        select_level_text = Text('level select', pos = vh(50, 45), size=UIsize(5))
+        select_level_button = Button(select_level_text, (59, 189, 30), 'level_select')
 
-        select_level_text = Text('create map', pos = (DISPLAY_SIZE[0]//2, DISPLAY_SIZE[1]//3 * 2), size=30)
-        select_level_button = Button(select_level_text, (29, 53, 207), 'create_map')
+        create_map_text = Text('create map', pos = vh(50, 60), size=UIsize(5))
+        create_map_button = Button(create_map_text, (29, 53, 207), 'create_map')
 
-        self.buttons = [start_button, select_level_button]
+        quit_text = Text('quit', pos = vh(50, 75), size=UIsize(5))
+        quit_button = Button(quit_text, (194, 25, 25), 'quit')
+
+        self.buttons = [create_map_button, select_level_button, quit_button]
+
+        self.title_text = Text("Geometry Hawk (2 ahh)", vh(50, 20), color=(209, 154, 15), size=UIsize(10))
 
     def run(self):
 
@@ -34,11 +39,16 @@ class Menu:
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 mouse_released = True
 
+        self.title_text.blit(self.display)
+
         for button in self.buttons:
             button.update(mouse_pressed, mouse_released)
             if button.is_clicked():
                 if button.type == 'create_map':
-                    pass
+                    game_state_manager.setState('my_levels')
                 if button.type == 'level_select':
                     game_state_manager.setState('level_select')
+                if button.type == 'quit':
+                    pygame.quit()
+                    sys.exit()
             button.blit(self.display)

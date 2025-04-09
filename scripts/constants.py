@@ -1,12 +1,18 @@
+import tkinter as tk
 
-DISPLAY_SIZE = (1280, 720)
+root = tk.Tk()
+screen_width = root.winfo_screenwidth()
+screen_height = root.winfo_screenheight()
+root.destroy()
+
+DISPLAY_SIZE = (screen_width*0.8, screen_height*0.8)
 FPS = 60
 
-TILE_SIZE = 48
+TILE_SIZE = DISPLAY_SIZE[0] * 3 // 80
 
-PLAYER_SPEED = 10.4 * TILE_SIZE / FPS
-PLAYER_HITBOX = 0.7
-GRAVITY = 1.06    # Downward acceleration per frame
+PLAYER_SPEED = 10.4 * TILE_SIZE / 60
+PLAYER_HITBOX = 0.7 # precent
+GRAVITY = (1.06 / 48) * TILE_SIZE    # Downward acceleration per frame
 
 
 PLAYER_POS = [50, 50]
@@ -20,17 +26,17 @@ PLAYERS_IMAGE_SIZE = {
         'wave': (PLAYERS_SIZE['wave'][0]*1.4, PLAYERS_SIZE['wave'][1]*1.4),
         'ball': PLAYERS_SIZE['ball'],
     }
-PLAYER_VELOCITY = {'cube': 16, 'wave': PLAYER_SPEED, 'ball': 1.8}
-MAX_VELOCITY = {'cube': 16, 'ball': 12}
+PLAYER_VELOCITY = {'cube': (16 / 48) * TILE_SIZE, 'wave': PLAYER_SPEED, 'ball': (1.8 / 48) * TILE_SIZE}
+MAX_VELOCITY = {'cube': (16 / 48) * TILE_SIZE, 'ball': (12 / 48) * TILE_SIZE}
 
 PHYSICS_TILES = {'grass', 'stone'}
 INTERACTIVE_TILES = {'portal', 'spike', 'finish'}
 AUTOTILE_TYPES = {'grass', 'stone'}
-SPIKE_SIZE = (0.4, 0.6)
+SPIKE_SIZE = (0.4, 0.6) # precent
 FONT = None
 
-EDITOR_SCROLL = 8
-LEVEL_SELECTOR_SCROLL = 40
+EDITOR_SCROLL = (8 / 48) * TILE_SIZE
+LEVEL_SELECTOR_SCROLL = DISPLAY_SIZE[0] * 6 // 100 // 3
 
 
 #debugging

@@ -33,6 +33,9 @@ def load_assets():
 
 def vh(width_precent, height_precent):
     return (width_precent * DISPLAY_SIZE[0] // 100, height_precent * DISPLAY_SIZE[1] // 100)
+
+def UIsize(size):
+    return int(DISPLAY_SIZE[0] * size // 100)
         
 
 class Animation:

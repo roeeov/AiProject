@@ -6,29 +6,37 @@ from scripts.gameStateManager import game_state_manager
 from scripts.mapManager import map_manager
 from scripts.constants import *
 
-class LevelSelect:
+class myLevels:
     
     def __init__(self, display):
 
         self.display = display
         self.scroll = 0
+        self.reloadButtons()
+
+    def reloadButtons(self):
         self.buttons = []
 
         prev_text = Text('back', pos = (50, 50), size=UIsize(1.5))
         prev_button = Button(prev_text, (0 ,255, 0), button_type='prev')
         self.buttons.append(prev_button)
 
-        online_map_dict = map_manager.getOnlineMapsDict()
-        for idx, map in enumerate(online_map_dict.values()):
+        new_map_text = Text('new map', pos = vh(90, 90), size=UIsize(3))
+        new_map_button = Button(new_map_text, (0 ,255, 0), button_type='new_map')
+        self.buttons.append(new_map_button)
+
+        my_maps_dict = map_manager.getEditorMapsDict()
+        for idx, map in enumerate(my_maps_dict.values()):
             map_text = map['info']['name'] + ' '*5 + map['info']['creator'] + ' '*5 + map['info']['difficulty']
             map_text = Text(map_text, pos = (vh(50, -1)[0], (idx+1)*vh(-1, 12)[1] - vh(-1, 3)[1]), size=UIsize(6))
             map_button = Button(map_text, (0 ,255, 0), "map_idx: " + map['info']['id'])
             self.buttons.append(map_button)
 
-        self.max_scroll = -vh(-1, 12)[1] * len(online_map_dict)
+        self.max_scroll = -vh(-1, 12)[1] * len(my_maps_dict)
+
         
     def run(self):
-        
+
         self.display.fill((242, 54, 245))
 
         mouse_pressed = False
@@ -53,19 +61,23 @@ class LevelSelect:
                     self.scroll = self.max_scroll
 
         for button in self.buttons:
-            if button.type != 'prev': button.set_offset(0, self.scroll)
+            if button.type not in {'prev', 'new_map'}: button.set_offset(0, self.scroll)
             button.update(mouse_pressed, mouse_released)
             if button.is_clicked():
                 if button.type == 'prev':
                     game_state_manager.returnToPrevState()
+                elif button.type == 'new_map':
+                    map_manager.createNewMap()
+                    game_state_manager.setState('my_level_page')
+                    self.reloadButtons()
                 else:
-                    map_id = button.type.split()[-1]
-                    map_manager.setMap(map_id)
-                    game_state_manager.setState('level_page')
+                        map_id = button.type.split()[-1]
+                        map_manager.setMap(map_id)
+                        game_state_manager.setState('my_level_page')
 
             button.blit(self.display)
 
-class LevelPage:
+class myLevelPage:
 
     def __init__(self, display):
         self.display = display

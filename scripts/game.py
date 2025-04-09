@@ -20,20 +20,22 @@ class Game:
         self.openMenu = False
         self.buttons = []
 
-        back_text = Text('menu', pos = vh(60, 55), size=80)
+        back_text = Text('menu', pos = vh(60, 55), size=UIsize(5))
         back_button = Button(back_text, (0 ,255, 0), button_type='menu')
         self.buttons.append(back_button)
 
-        edit_text = Text('resume', pos = vh(40, 55), size=80)
+        edit_text = Text('resume', pos = vh(40, 55), size=UIsize(5))
         edit_button = Button(edit_text, (0 ,255, 0), button_type='resume')
         self.buttons.append(edit_button)
 
-        reset_text = Text('play again', pos = vh(50, 70), size=80)
+        reset_text = Text('play again', pos = vh(50, 70), size=UIsize(5))
         reset_button = Button(reset_text, (0 ,255, 0), button_type='reset')
         self.buttons.append(reset_button)
 
-        pause_text = Text('pause', pos = (50, 50), size=30)
+        pause_text = Text('pause', pos = (50, 50), size=UIsize(1.5))
         self.pause_button = Button(pause_text, (0 ,255, 0), button_type='prev')
+
+        self.pause_title_text = Text("Pause Menu", vh(50, 30), color=(255, 255, 255))
 
         self.assets = load_assets()
         for gamemode in GAMEMODES:
@@ -91,8 +93,7 @@ class Game:
                         button.blit(self.display)
         else:
 
-            pause_text = Text("Pause Menu", vh(50, 30), color=(255, 255, 255))
-            pause_text.blit(self.display)
+            self.pause_title_text.blit(self.display)
 
             for button in self.buttons:  
 
@@ -139,7 +140,12 @@ class Game:
                     if not self.openMenu:
                         self.reset()
                 if event.key == pygame.K_ESCAPE:
-                    self.openMenu = True
+                    if not self.openMenu:
+                        self.openMenu = True
+                    else:
+                        self.openMenu = False
+                        self.reset()
+                        game_state_manager.returnToPrevState()
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_UP:
@@ -158,8 +164,8 @@ class Game:
 
         self.display.blit(self.assets['background'], (0, 0))
             
-        self.scroll[0] += (self.player.rect().centerx - self.display.get_width() / 3 - self.scroll[0]) / 20
-        self.scroll[1] += (self.player.rect().centery - self.display.get_height() / 2 - self.scroll[1]) / 20
+        self.scroll[0] += (self.player.rect().centerx - self.display.get_width() / 3 - self.scroll[0]) / 20 * 60 / FPS
+        self.scroll[1] += (self.player.rect().centery - self.display.get_height() / 2 - self.scroll[1]) / 20 * 60 / FPS
         render_scroll = (int(self.scroll[0]), int(self.scroll[1]))
             
         self.clouds.update()

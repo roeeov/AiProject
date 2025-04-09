@@ -3,7 +3,7 @@
         "name": "begginers park",
         "creator": "roeeov",
         "difficulty": "easy",
-        "id": "8709856889"
+        "id": "00003"
     },
     "tilemap": {
         "18;4": {
@@ -582,22 +582,6 @@
                 -1
             ]
         },
-        "36;-1": {
-            "type": "stone",
-            "variant": 0,
-            "pos": [
-                36,
-                -1
-            ]
-        },
-        "36;-2": {
-            "type": "decor",
-            "variant": 0,
-            "pos": [
-                36,
-                -2
-            ]
-        },
         "50;-4": {
             "type": "stone",
             "variant": 0,
@@ -1102,14 +1086,6 @@
                 -2
             ]
         },
-        "33;-4": {
-            "type": "grass",
-            "variant": 0,
-            "pos": [
-                33,
-                -4
-            ]
-        },
         "31;-5": {
             "type": "grass",
             "variant": 0,
@@ -1568,17 +1544,9 @@
         },
         "117;-10": {
             "type": "grass",
-            "variant": 0,
+            "variant": 6,
             "pos": [
                 117,
-                -10
-            ]
-        },
-        "116;-10": {
-            "type": "grass",
-            "variant": 0,
-            "pos": [
-                116,
                 -10
             ]
         },
@@ -2240,7 +2208,7 @@
         },
         "115;-10": {
             "type": "grass",
-            "variant": 0,
+            "variant": 4,
             "pos": [
                 115,
                 -10
@@ -2347,46 +2315,6 @@
             "variant": 5,
             "pos": [
                 105,
-                2
-            ]
-        },
-        "106;2": {
-            "type": "grass",
-            "variant": 0,
-            "pos": [
-                106,
-                2
-            ]
-        },
-        "107;2": {
-            "type": "grass",
-            "variant": 0,
-            "pos": [
-                107,
-                2
-            ]
-        },
-        "108;2": {
-            "type": "grass",
-            "variant": 0,
-            "pos": [
-                108,
-                2
-            ]
-        },
-        "109;2": {
-            "type": "grass",
-            "variant": 0,
-            "pos": [
-                109,
-                2
-            ]
-        },
-        "110;2": {
-            "type": "grass",
-            "variant": 0,
-            "pos": [
-                110,
                 2
             ]
         },
@@ -2592,7 +2520,7 @@
         },
         "142;-5": {
             "type": "stone",
-            "variant": 0,
+            "variant": 1,
             "pos": [
                 142,
                 -5
@@ -3136,7 +3064,7 @@
         },
         "14;4": {
             "type": "grass",
-            "variant": 0,
+            "variant": 5,
             "pos": [
                 14,
                 4
@@ -3248,7 +3176,7 @@
         },
         "20;2": {
             "type": "grass",
-            "variant": 0,
+            "variant": 5,
             "pos": [
                 20,
                 2
@@ -3308,6 +3236,126 @@
             "pos": [
                 14,
                 3
+            ]
+        },
+        "110;2": {
+            "type": "grass",
+            "variant": 0,
+            "pos": [
+                110,
+                2
+            ]
+        },
+        "110;3": {
+            "type": "grass",
+            "variant": 4,
+            "pos": [
+                110,
+                3
+            ]
+        },
+        "109;3": {
+            "type": "grass",
+            "variant": 0,
+            "pos": [
+                109,
+                3
+            ]
+        },
+        "109;4": {
+            "type": "grass",
+            "variant": 4,
+            "pos": [
+                109,
+                4
+            ]
+        },
+        "108;4": {
+            "type": "grass",
+            "variant": 0,
+            "pos": [
+                108,
+                4
+            ]
+        },
+        "107;4": {
+            "type": "grass",
+            "variant": 6,
+            "pos": [
+                107,
+                4
+            ]
+        },
+        "107;3": {
+            "type": "grass",
+            "variant": 2,
+            "pos": [
+                107,
+                3
+            ]
+        },
+        "106;3": {
+            "type": "grass",
+            "variant": 6,
+            "pos": [
+                106,
+                3
+            ]
+        },
+        "106;2": {
+            "type": "grass",
+            "variant": 2,
+            "pos": [
+                106,
+                2
+            ]
+        },
+        "115;-11": {
+            "type": "grass",
+            "variant": 0,
+            "pos": [
+                115,
+                -11
+            ]
+        },
+        "116;-11": {
+            "type": "grass",
+            "variant": 0,
+            "pos": [
+                116,
+                -11
+            ]
+        },
+        "117;-11": {
+            "type": "grass",
+            "variant": 2,
+            "pos": [
+                117,
+                -11
+            ]
+        },
+        "95;-6": {
+            "type": "grass",
+            "variant": 0,
+            "pos": [
+                95,
+                -6
+            ]
+        },
+        "91;-7": {
+            "type": "grass",
+            "variant": 0,
+            "pos": [
+                91,
+                -7
+            ]
+        },
+        "142;-4": {
+            "type": "spike",
+            "variant": 1,
+            "pos": [
+                142,
+                -4
             ]
         }
     },

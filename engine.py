@@ -3,6 +3,7 @@ from scripts.constants import DISPLAY_SIZE, FPS, SHOW_FPS_COUNTER
 from scripts.game import Game
 from scripts.menu import Menu
 from scripts.levelSelect import LevelSelect, LevelPage
+from scripts.myLevels import myLevels, myLevelPage
 from scripts.gameStateManager import game_state_manager
 from scripts.utils import Text
 from scripts.editor import Editor
@@ -19,11 +20,14 @@ class Engine:
         self.game = Game(self.display)
         self.menu = Menu(self.display)
         self.level_select = LevelSelect(self.display)
-        self.levelPage = LevelPage(self.display)
+        self.level_page = LevelPage(self.display)
+        self.my_levels = myLevels(self.display)
+        self.my_level_page = myLevelPage(self.display)
         self.editor = Editor(self.display)
 
-
-        self.state = {'game': self.game, 'menu': self.menu, 'level_select': self.level_select, 'level_page': self.levelPage, 'edit': self.editor}
+        self.state = {'game': self.game, 'menu': self.menu, 'level_select': self.level_select, 'level_page': self.level_page, 'edit': self.editor,
+                      'my_levels': self.my_levels, 'my_level_page': self.my_level_page}
+        
 
     def run(self):
         while True:
