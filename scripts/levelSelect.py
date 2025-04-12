@@ -12,11 +12,18 @@ class LevelSelect:
 
         self.display = display
         self.scroll = 0
+        self.reloadButtons()
+
+    def reloadButtons(self):
         self.buttons = []
 
-        prev_text = Text('back', pos = (50, 50), size=UIsize(1.5))
-        prev_button = Button(prev_text, (0 ,255, 0), button_type='prev')
+        prev_text = Text('', pos = (50, 50), size=UIsize(3))
+        prev_button = Button(prev_text, (0 ,255, 0), button_type='prev', image=load_image('UI/buttons/back.png', (UIsize(3), UIsize(3))) )
         self.buttons.append(prev_button)
+
+        reload_text = Text('reload', pos = (vh(90, -1)[0], vh(-1, 90)[1]), size=UIsize(3))
+        reload_button = Button(reload_text, (0 ,255, 0), button_type='reload')
+        self.buttons.append(reload_button)
 
         online_map_dict = map_manager.getOnlineMapsDict()
         for idx, map in enumerate(online_map_dict.values()):
@@ -53,11 +60,14 @@ class LevelSelect:
                     self.scroll = self.max_scroll
 
         for button in self.buttons:
-            if button.type != 'prev': button.set_offset(0, self.scroll)
+            if button.type not in {'prev', 'reload'}: button.set_offset(0, self.scroll)
             button.update(mouse_pressed, mouse_released)
             if button.is_clicked():
                 if button.type == 'prev':
                     game_state_manager.returnToPrevState()
+                elif button.type == 'reload':
+                    map_manager.update_map_dict()
+                    self.reloadButtons()
                 else:
                     map_id = button.type.split()[-1]
                     map_manager.setMap(map_id)
@@ -67,8 +77,9 @@ class LevelSelect:
 
 class LevelPage:
 
-    def __init__(self, display):
+    def __init__(self, display, level_select):
         self.display = display
+        self.level_select = level_select
         self.buttons = []
 
         play_text = Text('play', pos = vh(60, 60), size=UIsize(6))
@@ -79,24 +90,26 @@ class LevelPage:
         edit_button = Button(edit_text, (0 ,255, 0), button_type='edit')
         self.buttons.append(edit_button)
 
-        prev_text = Text('back', pos = (50, 50), size=UIsize(1.5))
-        prev_button = Button(prev_text, (0 ,255, 0), button_type='prev')
+        prev_text = Text('', pos = (50, 50), size=UIsize(3))
+        prev_button = Button(prev_text, (0 ,255, 0), button_type='prev', image=load_image('UI/buttons/back.png', (UIsize(3), UIsize(3))) )
         self.buttons.append(prev_button)
 
     def run(self):
 
         self.display.fill((245, 137, 49))
 
-        map_name = map_manager.getMapInfo(map_manager.current_map_id)["name"]
-        map_name_text = Text(map_name, pos = vh(50, 25), size=120, color=(255, 255, 255))
+        map_info = map_manager.getMapInfo(map_manager.current_map_id)
+
+        map_name = map_info["name"]
+        map_name_text = Text(map_name, pos = vh(50, 25), size=UIsize(5), color=(255, 255, 255))
         map_name_text.blit(display=self.display)
 
-        map_creator = map_manager.getMapInfo(map_manager.current_map_id)["creator"]
-        map_creator_text = Text("creator: " + map_creator, pos = vh(35, 40), size=40, color=(255, 255, 255))
+        map_creator = map_info["creator"]
+        map_creator_text = Text("creator: " + map_creator, pos = vh(35, 40), size=UIsize(3), color=(255, 255, 255))
         map_creator_text.blit(display=self.display)
 
-        map_difficulty = map_manager.getMapInfo(map_manager.current_map_id)["difficulty"]
-        map_difficulty_text = Text("difficulty: " + map_difficulty, pos =vh(65, 40), size=40, color=(255, 255, 255))
+        map_difficulty = map_info["difficulty"]
+        map_difficulty_text = Text("difficulty: " + map_difficulty, pos =vh(65, 40), size=UIsize(3), color=(255, 255, 255))
         map_difficulty_text.blit(display=self.display)
 
         mouse_pressed = False
@@ -107,6 +120,7 @@ class LevelPage:
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
+                    self.level_select.reloadButtons()
                     game_state_manager.returnToPrevState()
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 mouse_pressed = True
@@ -117,6 +131,7 @@ class LevelPage:
             button.update(mouse_pressed, mouse_released)
             if button.is_clicked():
                 if button.type == 'prev':
+                    self.level_select.reloadButtons()
                     game_state_manager.returnToPrevState()
                 elif button.type == 'play':
                     map_manager.loadMap()

@@ -69,6 +69,78 @@ class Text():
 
     def blit(self, display):
         display.blit(self.text, self.text_rect)
+
+
+
+class InputBox:
+    def __init__(self, pos, width, height, box_type, placeholder='', placeholderColor = (99, 99, 99), 
+                 textColor = (0, 0, 0), activeColor = (44, 88, 245), inactiveColor = (0, 0, 0)):
+        self.rect = pygame.Rect(0, 0, width, height)
+        self.rect.center = pos
+        self.colors = {'text': textColor, 'frame': inactiveColor, 'active': activeColor, 'inactive': inactiveColor, 'placeholder': placeholderColor}
+        self.text = ''
+        self.placeholder = placeholder
+        self.font = pygame.font.Font(FONT, 36)
+        self.txt_surface = self.font.render(
+                    self.text if self.text else self.placeholder, True, self.colors['text'] if self.text else self.colors['placeholder'])
+        self.active = False
+        self.type = box_type
+
+    def handle_event(self, event):
+        
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            # Toggle active if the box is clicked
+            if self.rect.collidepoint(event.pos):
+                self.active = not self.active
+            else:
+                self.active = False
+            self.colors['frame'] = self.colors['active'] if self.active else self.colors['inactive']
+
+        output = ''
+        if event.type == pygame.KEYDOWN:
+            if self.active:
+                if event.key == pygame.K_RETURN:
+                    output = self.text
+                    self.text = ''
+                elif event.key == pygame.K_BACKSPACE:
+                    self.text = self.text[:-1]
+                else:
+                    self.text += event.unicode
+                self.txt_surface = self.font.render(
+                    self.text if self.text else self.placeholder, True, self.colors['text'] if self.text else self.colors['placeholder'])
+
+        return output
+
+    def update(self):
+        # Resize the box if the text is too long
+        width = max(200, self.txt_surface.get_width()+10)
+        self.rect.w = width
+
+    def draw(self, screen):
+        # Blit the text
+        text_rect = self.txt_surface.get_rect(center=self.rect.center)
+        screen.blit(self.txt_surface, text_rect)
+        # Blit the rect
+        pygame.draw.rect(screen, self.colors['frame'], self.rect, 2)
+
+class radionButton:
+    def __init__(self, buttonList):
+        self.buttons = buttonList
+        self.chosen = -1
+
+    def update(self, mouse_pressed, mouse_released):
+        for idx, button in enumerate(self.buttons):
+            button.update(mouse_pressed, mouse_released)
+            if button.is_clicked():
+                self.chosen = idx
+
+        return self.buttons[self.chosen].type if self.chosen != -1 else None
+    
+    def blit(self, surf):
+        for idx, button in enumerate(self.buttons):
+            opacity = 255 if idx == self.chosen else 255//2
+            button.blit(surf, opacity=opacity)
+
     
 
 class Button:
@@ -108,7 +180,7 @@ class Button:
         if self.image:
             self.original_image = pygame.transform.scale(
                 self.image, 
-                (self.hover_rect.width, self.hover_rect.height)
+                (self.image.get_width(), self.image.get_height())
             )
         else:
             self.original_image = None
@@ -152,13 +224,13 @@ class Button:
             # Scale to the hover_rect size
             self.original_image = pygame.transform.scale(
                 self.image, 
-                (self.hover_rect.width, self.hover_rect.height)
+                (self.image.get_width(), self.image.get_height())
             )
             
             # Also create the scaled version for hover state
             self.scaled_image = pygame.transform.scale(
                 self.image,
-                (self.scaled_hover_rect.width, self.scaled_hover_rect.height)
+                (self.image.get_width() * self.scale_factor, self.image.get_height() * self.scale_factor)
             )
         else:
             self.original_image = None
@@ -188,7 +260,7 @@ class Button:
         if self.image:
             self.scaled_image = pygame.transform.scale(
                 self.image,
-                (self.scaled_hover_rect.width, self.scaled_hover_rect.height)
+                (self.image.get_width() * self.scale_factor, self.image.get_height() * self.scale_factor)
             )
         else:
             self.scaled_image = None
@@ -201,31 +273,91 @@ class Button:
             self.mouse_released = mouse_released
         
     def is_hovered(self):
-        return self.hover_rect.collidepoint(self.mouse_pos)
-    
+        if self.image:
+            # Create image rect with proper center position
+            if self.hover_enabled and self.hover_rect.collidepoint(self.mouse_pos):
+                # Use scaled image position when hovering
+                image_rect = self.scaled_image.get_rect(center=self.scaled_hover_rect.center)
+            else:
+                # Use normal image position
+                image_rect = self.original_image.get_rect(center=self.hover_rect.center)
+            return self.hover_rect.collidepoint(self.mouse_pos) or image_rect.collidepoint(self.mouse_pos)
+        else: 
+            return self.hover_rect.collidepoint(self.mouse_pos)
+
     def is_clicked(self):
         return self.is_hovered() and self.mouse_released
 
-    def blit(self, display):
+    def blit(self, display, opacity=255):
+        """
+        Draw the button to the display with the specified opacity.
+        
+        Args:
+            display: The display surface to draw on
+            opacity: Opacity value (0-255, default=255 for fully opaque)
+        """
         self.update()
         hovering = self.is_hovered() and self.hover_enabled
         
         rect_to_draw = self.scaled_hover_rect if hovering else self.hover_rect
         
-        # Draw background (either image or color)
-        if hovering and self.scaled_image:
-            display.blit(self.scaled_image, self.scaled_hover_rect)
-        elif self.original_image:
-            display.blit(self.original_image, self.hover_rect)
+        # Apply opacity to images and text
+        if opacity < 255:
+            # Draw background (either image or color)
+            if hovering and self.scaled_image:
+                # Create a copy of the scaled image with alpha
+                temp_image = self.scaled_image.copy().convert_alpha()
+                temp_image.fill((255, 255, 255, opacity), None, pygame.BLEND_RGBA_MULT)
+                
+                # Center the scaled image on the scaled hover rect
+                scaled_image_rect = temp_image.get_rect(center=self.scaled_hover_rect.center)
+                display.blit(temp_image, scaled_image_rect)
+            elif self.original_image:
+                # Create a copy of the original image with alpha
+                temp_image = self.original_image.copy().convert_alpha()
+                temp_image.fill((255, 255, 255, opacity), None, pygame.BLEND_RGBA_MULT)
+                
+                # Center the original image on the hover rect
+                original_image_rect = temp_image.get_rect(center=self.hover_rect.center)
+                display.blit(temp_image, original_image_rect)
+            else:
+                # For color background, create a transparent surface
+                bg_surface = pygame.Surface(rect_to_draw.size, pygame.SRCALPHA)
+                bg_color = (*self.background_color[:3], opacity)  # Add alpha to RGB color
+                bg_surface.fill(bg_color)
+                display.blit(bg_surface, rect_to_draw)
+            
+            # Draw text with opacity
+            if hovering:
+                # Create a copy of the scaled text with alpha
+                temp_text = self.scaled_text_surface.copy().convert_alpha()
+                temp_text.fill((255, 255, 255, opacity), None, pygame.BLEND_RGBA_MULT)
+                
+                scaled_text_rect = temp_text.get_rect(center=self.scaled_hover_rect.center)
+                display.blit(temp_text, scaled_text_rect)
+            else:
+                # Create a copy of the original text with alpha
+                temp_text = self.original_text_surface.copy().convert_alpha()
+                temp_text.fill((255, 255, 255, opacity), None, pygame.BLEND_RGBA_MULT)
+                
+                display.blit(temp_text, self.rect)
         else:
-            pygame.draw.rect(display, self.background_color, rect_to_draw)
-        
-        # Draw text
-        if hovering:
-            scaled_text_rect = self.scaled_text_surface.get_rect(center=self.scaled_hover_rect.center)
-            display.blit(self.scaled_text_surface, scaled_text_rect)
-        else:
-            display.blit(self.original_text_surface, self.rect)
+            # Original behavior for full opacity
+            if hovering and self.scaled_image:
+                scaled_image_rect = self.scaled_image.get_rect(center=self.scaled_hover_rect.center)
+                display.blit(self.scaled_image, scaled_image_rect)
+            elif self.original_image:
+                original_image_rect = self.original_image.get_rect(center=self.hover_rect.center)
+                display.blit(self.original_image, original_image_rect)
+            else:
+                pygame.draw.rect(display, self.background_color, rect_to_draw)
+            
+            # Draw text
+            if hovering:
+                scaled_text_rect = self.scaled_text_surface.get_rect(center=self.scaled_hover_rect.center)
+                display.blit(self.scaled_text_surface, scaled_text_rect)
+            else:
+                display.blit(self.original_text_surface, self.rect)
         
         # Debug visualization
         if SHOW_BUTTON_HITBOX:

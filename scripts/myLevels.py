@@ -17,8 +17,8 @@ class myLevels:
     def reloadButtons(self):
         self.buttons = []
 
-        prev_text = Text('back', pos = (50, 50), size=UIsize(1.5))
-        prev_button = Button(prev_text, (0 ,255, 0), button_type='prev')
+        prev_text = Text('', pos = (50, 50), size=UIsize(3))
+        prev_button = Button(prev_text, (0 ,255, 0), button_type='prev', image=load_image('UI/buttons/back.png', (UIsize(3), UIsize(3))) )
         self.buttons.append(prev_button)
 
         new_map_text = Text('new map', pos = vh(90, 90), size=UIsize(3))
@@ -79,37 +79,63 @@ class myLevels:
 
 class myLevelPage:
 
-    def __init__(self, display):
+    def __init__(self, display, level_select):
         self.display = display
+        self.level_select = level_select
         self.buttons = []
 
-        play_text = Text('play', pos = vh(60, 60), size=UIsize(6))
+        play_text = Text('play', pos = vh(50, 60), size=UIsize(6))
         play_button = Button(play_text, (0 ,255, 0), button_type='play')
         self.buttons.append(play_button)
 
-        edit_text = Text('edit', pos = vh(40, 60), size=UIsize(6))
+        edit_text = Text('edit', pos = vh(30, 60), size=UIsize(6))
         edit_button = Button(edit_text, (0 ,255, 0), button_type='edit')
         self.buttons.append(edit_button)
 
-        prev_text = Text('back', pos = (50, 50), size=UIsize(1.5))
-        prev_button = Button(prev_text, (0 ,255, 0), button_type='prev')
+        post_text = Text('post', pos = vh(70, 60), size=UIsize(6))
+        post_button = Button(post_text, (0 ,255, 0), button_type='post')
+        self.buttons.append(post_button)
+
+        prev_text = Text('', pos = (50, 50), size=UIsize(3))
+        prev_button = Button(prev_text, (0 ,255, 0), button_type='prev', image=load_image('UI/buttons/back.png', (UIsize(3), UIsize(3))) )
         self.buttons.append(prev_button)
+
+        creator_input = InputBox(vh(28, 45), width=0, height=UIsize(3), box_type='creator', placeholder='edit creator name...')
+        name_input = InputBox(vh(45, 31), width=0, height=UIsize(3), box_type='name', placeholder='edit level name...')
+        self.inputBoxes = (creator_input ,name_input)
+
+        diffs = []
+        diffLen = len(DIFFICULTIES)
+        for idx, difficulity in enumerate(DIFFICULTIES):
+            diff_text = Text(difficulity, pos = vh(65 - (diffLen/2 - 0.5)*6 + idx * 6, 45), size=UIsize(2))
+            diff_button = Button(diff_text, (129, 98, 252), button_type=difficulity)
+            diffs.append(diff_button)
+        self.diffRadio = radionButton(diffs)
+
+        self.diff_faces = {diff: load_image(f'UI/difficulity/{diff}.png', scale=(UIsize(3), UIsize(3))) for diff in DIFFICULTIES}
+        self.diff_faces['NA'] = load_image(f'UI/difficulity/NA.png', scale=(UIsize(3), UIsize(3)))
+
 
     def run(self):
 
         self.display.fill((245, 137, 49))
 
-        map_name = map_manager.getMapInfo(map_manager.current_map_id)["name"]
-        map_name_text = Text(map_name, pos = vh(50, 25), size=120, color=(255, 255, 255))
+        map_info = map_manager.getMapInfo(map_manager.current_map_id)
+
+        map_name = map_info["name"]
+        map_name_text = Text(map_name, pos = vh(50, 25), size=UIsize(5), color=(255, 255, 255))
         map_name_text.blit(display=self.display)
 
-        map_creator = map_manager.getMapInfo(map_manager.current_map_id)["creator"]
-        map_creator_text = Text("creator: " + map_creator, pos = vh(35, 40), size=40, color=(255, 255, 255))
+        map_creator = map_info["creator"]
+        map_creator_text = Text("creator: " + map_creator, pos = vh(35, 40), size=UIsize(3), color=(255, 255, 255))
         map_creator_text.blit(display=self.display)
 
-        map_difficulty = map_manager.getMapInfo(map_manager.current_map_id)["difficulty"]
-        map_difficulty_text = Text("difficulty: " + map_difficulty, pos =vh(65, 40), size=40, color=(255, 255, 255))
+        map_difficulty = map_info["difficulty"]
+        map_difficulty_text = Text("difficulty: ", pos =vh(65, 40), size=UIsize(3), color=(255, 255, 255))
         map_difficulty_text.blit(display=self.display)
+        # blit difficulity face
+        image_rect = self.diff_faces[map_difficulty].get_rect(center=vh(72, 39))
+        self.display.blit(self.diff_faces[map_difficulty], image_rect)
 
         mouse_pressed = False
         mouse_released = False
@@ -119,16 +145,31 @@ class myLevelPage:
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
+                    self.level_select.reloadButtons()
                     game_state_manager.returnToPrevState()
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 mouse_pressed = True
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 mouse_released = True
 
+            for inputBox in self.inputBoxes:
+                output = inputBox.handle_event(event)
+                if output:
+                    match inputBox.type:
+                        case 'creator':
+                            map_manager.updateMapInfo(creator=output)
+                        case 'name':
+                            map_manager.updateMapInfo(name=output)
+
+        for inputBox in self.inputBoxes:
+            inputBox.update()
+            inputBox.draw(self.display)
+
         for button in self.buttons:
             button.update(mouse_pressed, mouse_released)
             if button.is_clicked():
                 if button.type == 'prev':
+                    self.level_select.reloadButtons()
                     game_state_manager.returnToPrevState()
                 elif button.type == 'play':
                     map_manager.loadMap()
@@ -136,7 +177,20 @@ class myLevelPage:
                 elif button.type == 'edit':
                     map_manager.loadMap()
                     game_state_manager.setState('edit')
+                elif button.type == 'post':
+                    map_info = map_manager.getMapInfo(map_manager.current_map_id)
+                    if map_info['difficulty'] != 'NA' and map_info['creator'] != 'not entered' and map_info['name'] != 'unnamed':
+                        map_manager.updateMapInfo(id= map_manager.generateOnlineId())
+                        map_manager.update_map_dict()
+                        self.level_select.reloadButtons()
+                        game_state_manager.returnToPrevState()
             button.blit(self.display)
+
+        self.diffRadio.chosen = DIFFICULTIES.index(map_info['difficulty']) if map_info['difficulty'] != 'NA' else -1
+        diff = self.diffRadio.update(mouse_pressed, mouse_released)
+        if diff not in {None, map_info['difficulty']}:
+            map_manager.updateMapInfo(difficulty=diff)
+        self.diffRadio.blit(self.display)
 
         
 

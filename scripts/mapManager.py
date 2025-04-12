@@ -47,6 +47,28 @@ class MapManager:
             return self.editor_levels_json[id]["info"]
         else:
             return self.online_levels_json[id]["info"]
+        
+    def updateMapInfo(self, creator = None, name = None, difficulty = None, id = None):
+        file_path = f'data/maps/{self.current_map_id}.json'
+
+        with open(file_path, "r") as file:
+            data = json.load(file)
+
+        if creator: data["info"]["creator"] = creator
+        if name: data["info"]["name"] = name
+        if difficulty: data["info"]["difficulty"] = difficulty
+        if id: 
+            data["info"]["id"] = id
+            new_file_path = f'data/maps/{id}.json'
+            os.rename(file_path, new_file_path)
+            file_path = new_file_path
+            self.current_map_id = ''
+
+        with open(file_path, "w") as file:
+            json.dump(data, file, indent=4) 
+
+        self.update_map_dict()
+
 
     def loadMap(self):
         map_path = self.getMapPath()

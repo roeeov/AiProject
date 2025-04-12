@@ -1,4 +1,5 @@
 import tkinter as tk
+import pygame
 
 root = tk.Tk()
 screen_width = root.winfo_screenwidth()
@@ -20,7 +21,7 @@ PLAYER_POS = [50, 50]
 # Needs to be changed for every new gamemode added
 GAMEMODES= {'cube', 'wave', 'ball'}
 GRAVITY_GAMEMODES = {'cube', 'ball'}
-PLAYERS_SIZE = {'cube': (TILE_SIZE*9.5//10, TILE_SIZE*9.5//10), 'wave': (TILE_SIZE*5//10, TILE_SIZE*5//10), 'ball': (TILE_SIZE*9.5//10, TILE_SIZE*9.5//10)}
+PLAYERS_SIZE = {'cube': (TILE_SIZE*9.5//10, TILE_SIZE*9.5//10), 'wave': (TILE_SIZE//2, TILE_SIZE//2), 'ball': (TILE_SIZE*9.5//10, TILE_SIZE*9.5//10)}
 PLAYERS_IMAGE_SIZE = {
         'cube': PLAYERS_SIZE['cube'],
         'wave': (PLAYERS_SIZE['wave'][0]*1.4, PLAYERS_SIZE['wave'][1]*1.4),
@@ -37,6 +38,8 @@ FONT = None
 
 EDITOR_SCROLL = (8 / 48) * TILE_SIZE
 LEVEL_SELECTOR_SCROLL = DISPLAY_SIZE[0] * 6 // 100 // 3
+
+DIFFICULTIES = ('easy', 'normal', 'hard', 'harder', 'insane', 'demon')
 
 
 #debugging

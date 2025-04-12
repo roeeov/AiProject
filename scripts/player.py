@@ -26,13 +26,20 @@ class Player:
         self.gravityDirection = 'down'
         self.setGameMode('cube')
 
-        self.air_time = 0
+        self.air_time = 5
         self.total_rotation = 0  # Track total rotation during a jump
 
     def reset(self):
         """Reset the player to its initial state."""
         self.trail.clear()
-        self._initialize()  # Just call _initialize instead of rewriting the logic
+        self._initialize()
+        
+        # Add a grace period to avoid immediate portal interactions
+        self.portal_grace_period = 2  # In frames
+        
+        # Force gamemode to cube
+        self.gamemode = ''
+        self.setGameMode('cube')
 
 
     def update(self, tilemap, upPressed):
@@ -88,20 +95,25 @@ class Player:
                 if not self.collisions['right'] and not self.gamemode == 'wave':
                     self.pos[1] = entity_rect.y
 
-        entity_rect = self.rect()
-        hitbox = self.hitbox_rect()
-        for rect, (type, variant) in tilemap.interactive_rects_around(self.pos):
-            if hitbox.colliderect(rect):
-                match type:
-                    case 'portal':
-                        game_mode = {0 : 'ball', 1 : 'cube', 2 : 'wave'}[variant]
-                        self.setGameMode(game_mode)
-                    case 'spike':
-                        self.death = True
-                    case 'finish':
-                        self.finishLevel = True
-            if entity_rect.colliderect(rect):
-                pass
+           # Only check for interactive objects if not in grace period
+        if hasattr(self, 'portal_grace_period') and self.portal_grace_period > 0:
+            self.portal_grace_period -= 1
+        else:
+            # Check for portals and other interactive objects
+            entity_rect = self.rect()
+            hitbox = self.hitbox_rect()
+            for rect, (type, variant) in tilemap.interactive_rects_around(self.pos):
+                if hitbox.colliderect(rect):
+                    match type:
+                        case 'portal':
+                            game_mode = {0 : 'ball', 1 : 'cube', 2 : 'wave'}[variant]
+                            self.setGameMode(game_mode)
+                        case 'spike':
+                            self.death = True
+                        case 'finish':
+                            self.finishLevel = True
+                if entity_rect.colliderect(rect):
+                    pass
             
 
         self.updateVelocity()

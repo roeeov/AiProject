@@ -52,10 +52,15 @@ class Game:
         
         self.scroll = [0, 0]
 
-    def reset(self):
+    def reset(self):    
+        # Then set assets
         tile_map.assets = self.assets
+        
+        # Reset scroll and up state
         self.scroll = [0, 0]
         self.up = False
+        
+        # Reset player after tilemap is cleared
         self.player.reset()
 
     def blitMenu(self, mouse_pressed, mouse_released):
