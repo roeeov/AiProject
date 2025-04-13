@@ -19,10 +19,11 @@ class Player:
         self.collisions = {'up': False, 'down': False, 'right': False}
         self.hitbox_collisions = {'up': False, 'down': False, 'right': False}
         self.input = {'hold': False, 'click': False, 'buffer': False}
+        self.orb_clicked = False
         self.grounded = False
         self.death = False # is the player dead
         self.finishLevel = False # did the player reach the finish
-        self.respawn = False # is deth animation over and need to respawn
+        self.respawn = False # is death animation over and need to respawn
         self.gravityDirection = 'down'
         self.setGameMode('cube')
 
@@ -56,6 +57,7 @@ class Player:
         self.input['hold'] = upPressed
         if self.input['click']:  self.input['buffer'] = True
         if not self.input['hold']: self.input['buffer'] = False
+        self.orb_clicked = False
 
         # Always move at constant speed
         movement = (PLAYER_SPEED, 0)
@@ -113,7 +115,15 @@ class Player:
                         case 'finish':
                             self.finishLevel = True
                 if entity_rect.colliderect(rect):
-                    pass
+                    match type:
+                        case 'orb':
+                            if (self.input['buffer'] or self.input['click']) and not self.orb_clicked:
+                                if ORBS[variant] in {'blue', 'green'}: 
+                                    self.gravityDirection = {'down': 'up', 'up': 'down'}[self.gravityDirection]
+                                if self.gamemode != 'wave':
+                                    self.Yvelocity = {'down': -1, 'up': 1}[self.gravityDirection] * ORB_JUMP[ORBS[variant]][self.gamemode]
+                                self.input['buffer'] = False
+                                self.orb_clicked = True
             
 
         self.updateVelocity()

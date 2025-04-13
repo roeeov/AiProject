@@ -84,6 +84,8 @@ class Tilemap:
                             self.tile_size * tile['pos'][1] + self.tile_size//2
                         )
                         tiles.append((colrect, (tile['type'], tile['variant'])))
+                    case 'orb':
+                        tiles.append((pygame.Rect(tile['pos'][0] * self.tile_size, tile['pos'][1] * self.tile_size, self.tile_size, self.tile_size), (tile['type'], tile['variant'])))
         return tiles
     
     def autotile(self):

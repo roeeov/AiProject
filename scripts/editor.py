@@ -45,7 +45,8 @@ class Editor:
             'stone': load_images('tiles/stone', scale=IMGscale),
             'portal': load_images('tiles/portal', scale=(IMGscale[0], IMGscale[1]*2)),
             'spike': load_images('tiles/spike', scale=IMGscale),
-            'finish':load_images('tiles/finish', scale=(IMGscale[0], IMGscale[1]*2))
+            'finish':load_images('tiles/finish', scale=(IMGscale[0], IMGscale[1]*2)),
+            'orb': load_images('tiles/orb', scale=IMGscale),
         }
         tile_map.setAssets(tile_assets)
         return tile_assets

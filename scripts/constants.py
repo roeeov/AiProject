@@ -29,10 +29,14 @@ PLAYERS_IMAGE_SIZE = {
     }
 PLAYER_VELOCITY = {'cube': (16 / 48) * TILE_SIZE, 'wave': PLAYER_SPEED, 'ball': (1.8 / 48) * TILE_SIZE}
 MAX_VELOCITY = {'cube': (16 / 48) * TILE_SIZE, 'ball': (12 / 48) * TILE_SIZE}
+ORB_JUMP = {'yellow': {'cube': (16 / 48) * TILE_SIZE, 'ball': (16 / 48) * TILE_SIZE},
+            'green': {'cube': (13 / 48) * TILE_SIZE, 'ball': (13 / 48) * TILE_SIZE},
+            'blue': {'cube': -(3.6 / 48) * TILE_SIZE, 'ball': -(3.6 / 48) * TILE_SIZE}}
 
 PHYSICS_TILES = {'grass', 'stone'}
-INTERACTIVE_TILES = {'portal', 'spike', 'finish'}
+INTERACTIVE_TILES = {'portal', 'spike', 'finish', 'orb'}
 AUTOTILE_TYPES = {'grass', 'stone'}
+ORBS = ('blue', 'green', 'yellow')
 SPIKE_SIZE = (0.4, 0.6) # precent
 FONT = None
 
