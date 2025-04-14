@@ -10,23 +10,24 @@ class Menu:
     def __init__(self, display):
 
         self.display = display
+        self.background = load_image('UI/backgrounds/menuBG.png', scale=DISPLAY_SIZE)
 
-        select_level_text = Text('level select', pos = vh(50, 45), size=UIsize(5))
-        select_level_button = Button(select_level_text, (59, 189, 30), 'level_select')
+        select_level_text = Text('', pos = vh(50, 45), size=UIsize(5))
+        select_level_button = Button(select_level_text, (59, 189, 30), 'level_select', image=load_image('UI/buttons/levelSelect.png', scale=(UIsize(64/3), UIsize(17/3))))
 
-        create_map_text = Text('create map', pos = vh(50, 60), size=UIsize(5))
-        create_map_button = Button(create_map_text, (29, 53, 207), 'create_map')
+        create_map_text = Text('', pos = vh(50, 60), size=UIsize(5))
+        create_map_button = Button(create_map_text, (29, 53, 207), 'create_map', image=load_image('UI/buttons/createMap.png', scale=(UIsize(64/3), UIsize(17/3))))
 
-        quit_text = Text('quit', pos = vh(50, 75), size=UIsize(5))
-        quit_button = Button(quit_text, (194, 25, 25), 'quit')
+        quit_text = Text('', pos = vh(50, 75), size=UIsize(5))
+        quit_button = Button(quit_text, (194, 25, 25), 'quit', image=load_image('UI/buttons/quit.png', scale=(UIsize(33/3), UIsize(17/3))))
 
         self.buttons = [create_map_button, select_level_button, quit_button]
 
-        self.title_text = Text("Geometry Hawk (2 ahh)", vh(50, 20), color=(209, 154, 15), size=UIsize(10))
+        self.title_text = Text("GeoRush", vh(50, 20), color=(209, 154, 15), size=UIsize(10))
 
     def run(self):
 
-        self.display.fill((39, 178, 242))
+        self.display.blit(self.background, (0, 0))
 
         mouse_pressed = False
         mouse_released = False

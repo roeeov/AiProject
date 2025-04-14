@@ -8,6 +8,7 @@ from scripts.tilemap import tile_map
 from scripts.clouds import Clouds
 from scripts.constants import *
 from scripts.gameStateManager import game_state_manager
+from scripts.mapManager import map_manager
 
 class Game:
     def __init__(self, display):
@@ -16,6 +17,7 @@ class Game:
         
         self.input = {'w': False, 'space': False, 'up_arrow': False, 'mouse': False}
         self.up = False
+        self.noclip = False
 
         self.openMenu = False
         self.buttons = []
@@ -32,7 +34,7 @@ class Game:
         reset_button = Button(reset_text, (0 ,255, 0), button_type='reset')
         self.buttons.append(reset_button)
 
-        pause_text = Text('pause', pos = (50, 50), size=UIsize(1.5))
+        pause_text = Text('pause', pos = vh(4, 4.5), size=UIsize(1.5))
         self.pause_button = Button(pause_text, (0 ,255, 0), button_type='prev')
 
         self.pause_title_text = Text("Pause Menu", vh(50, 30), color=(255, 255, 255))
@@ -43,7 +45,7 @@ class Game:
             base_path = 'player/' + gamemode
             self.assets[base_path + '/run'] = Animation(load_images(base_path + '/run', scale=IMG_scale), img_dur=4)
             self.assets[base_path + '/death'] = Animation(load_images(base_path + '/death', scale=IMG_scale), loop=False)
-            if gamemode in GRAVITY_GAMEMODES:
+            if gamemode in GROUND_GAMEMODES:
                 self.assets[base_path + '/jump'] = Animation(load_images(base_path + '/jump', scale=IMG_scale))
         
         self.clouds = Clouds(self.assets['clouds'], count=16)
@@ -121,7 +123,7 @@ class Game:
 
 
     def run(self):
-        
+
         mouse_pressed = False
         mouse_released = False
         for event in pygame.event.get():
@@ -144,6 +146,9 @@ class Game:
                 if event.key == pygame.K_r:
                     if not self.openMenu:
                         self.reset()
+                if event.key == pygame.K_n:
+                    if not self.openMenu:
+                        self.noclip = not self.noclip
                 if event.key == pygame.K_ESCAPE:
                     if not self.openMenu:
                         self.openMenu = True
@@ -177,12 +182,13 @@ class Game:
         self.clouds.render(self.display, offset=render_scroll)
             
         tile_map.render(self.display, offset=render_scroll)
-            
+        
         self.pause_button.update(mouse_pressed, mouse_released)
         if self.pause_button.is_clicked():
                 self.openMenu = True
         self.pause_button.blit(self.display)
         
+        if not map_manager.current_map_id.startswith('-'): self.noclip = False
         if not self.openMenu: self.player.update(tile_map, self.up)
         self.player.render(self.display, offset=render_scroll)
         if (self.player.finishLevel): self.openMenu = True

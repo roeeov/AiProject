@@ -62,6 +62,7 @@ class Player:
         # Always move at constant speed
         movement = (PLAYER_SPEED, 0)
         self.collisions = {'up': False, 'down': False, 'right': False}
+        self.hitbox_collisions = {'up': False, 'down': False, 'right': False}
 
         if self.death: frame_movement = (0, 0)
         else: frame_movement = (movement[0], movement[1] + self.Yvelocity)
@@ -111,7 +112,7 @@ class Player:
                             game_mode = {0 : 'ball', 1 : 'cube', 2 : 'wave'}[variant]
                             self.setGameMode(game_mode)
                         case 'spike':
-                            self.death = True
+                            if not self.game.noclip: self.death = True
                         case 'finish':
                             self.finishLevel = True
                 if entity_rect.colliderect(rect):
@@ -122,8 +123,11 @@ class Player:
                                     self.gravityDirection = {'down': 'up', 'up': 'down'}[self.gravityDirection]
                                 if self.gamemode != 'wave':
                                     self.Yvelocity = {'down': -1, 'up': 1}[self.gravityDirection] * ORB_JUMP[ORBS[variant]][self.gamemode]
+
                                 self.input['buffer'] = False
                                 self.orb_clicked = True
+                                self.air_time = 5
+                                self.grounded = False
             
 
         self.updateVelocity()
@@ -131,7 +135,7 @@ class Player:
         self.air_time += 1
         # Check if we just landed
         just_landed = False
-        if self.collisions['down'] and self.gravityDirection == 'down' or self.collisions['up'] and self.gravityDirection == 'up':
+        if (self.collisions['down'] and self.gravityDirection == 'down' or self.collisions['up'] and self.gravityDirection == 'up') and not self.orb_clicked:
             if self.air_time > 4:  # We were in the air but now we're not
                 just_landed = True
             self.air_time = 0
@@ -197,17 +201,18 @@ class Player:
         self.set_action('run')
 
     def set_action(self, action):
-        if action == 'jump'and self.gamemode not in GRAVITY_GAMEMODES: action = 'run'
+        if action == 'jump' and self.gamemode not in GROUND_GAMEMODES: action = 'run'
         if action != self.action:
             self.action = action
             self.animation = self.game.assets['player/' + self.gamemode + '/' + self.action].copy()
 
     def checkDeath(self):
-        if self.hitbox_collisions['right']: 
-            self.death = True
-        if self.gamemode == 'wave':
-            if self.hitbox_collisions['up'] or self.hitbox_collisions['down']:
+        if not self.game.noclip:
+            if self.hitbox_collisions['right']: 
                 self.death = True
+            if self.gamemode == 'wave':
+                if self.hitbox_collisions['up'] or self.hitbox_collisions['down']:
+                    self.death = True
 
     def updateVelocity(self):
 
@@ -216,21 +221,21 @@ class Player:
             case 'cube':
 
                 if self.gravityDirection == 'down':
-                    gravity = GRAVITY
+                    gravity = GRAVITY['cube']
                     jumpVel = -PLAYER_VELOCITY['cube']
                 else:
-                    gravity = -GRAVITY
+                    gravity = -GRAVITY['cube']
                     jumpVel = PLAYER_VELOCITY['cube']
-
-                if self.input['hold'] and self.grounded:
-                    self.input['buffer'] = False
-                    self.air_time = 5
-                    self.Yvelocity = jumpVel
-                    
-                if (self.collisions['down'] or self.collisions['up']) and not self.collisions['right']:
-                    self.Yvelocity = 0
-                else:
-                    self.Yvelocity = max(-MAX_VELOCITY['cube'], min(self.Yvelocity + gravity, MAX_VELOCITY['cube']))
+                if not self.orb_clicked:
+                    if self.input['hold'] and self.grounded:
+                        self.input['buffer'] = False
+                        self.air_time = 5
+                        self.Yvelocity = jumpVel
+                        
+                    if (self.collisions['down'] or self.collisions['up']) and not self.collisions['right']:
+                        self.Yvelocity = 0
+                    else:
+                        self.Yvelocity = max(-MAX_VELOCITY['cube'], min(self.Yvelocity + gravity, MAX_VELOCITY['cube']))
 
             case 'wave':
 
@@ -242,18 +247,19 @@ class Player:
 
             case 'ball':
 
-                gravity = GRAVITY * {'down': 1, 'up': -1}[self.gravityDirection]
+                gravity = GRAVITY['ball'] * {'down': 1, 'up': -1}[self.gravityDirection]
 
-                if (self.collisions['down'] or self.collisions['up']) and not self.collisions['right']:
-                    self.Yvelocity = 0
-                else:
-                    self.Yvelocity = max(-MAX_VELOCITY['ball'], min(self.Yvelocity + gravity, MAX_VELOCITY['ball']))
+                if not self.orb_clicked:
+                    if (self.collisions['down'] or self.collisions['up']) and not self.collisions['right']:
+                        self.Yvelocity = 0
+                    else:
+                        self.Yvelocity = max(-MAX_VELOCITY['ball'], min(self.Yvelocity + gravity, MAX_VELOCITY['ball']))
 
-                if self.input['buffer'] and self.grounded:
-                    self.input['buffer'] = False
-                    self.air_time = 5
-                    self.gravityDirection = {'down': 'up', 'up': 'down'}[self.gravityDirection]
-                    self.Yvelocity = PLAYER_VELOCITY['ball'] * {'down': 1, 'up': -1}[self.gravityDirection]
+                    if self.input['buffer'] and self.grounded:
+                        self.input['buffer'] = False
+                        self.air_time = 5
+                        self.gravityDirection = {'down': 'up', 'up': 'down'}[self.gravityDirection]
+                        self.Yvelocity = PLAYER_VELOCITY['ball'] * {'down': 1, 'up': -1}[self.gravityDirection]
 
 
                 

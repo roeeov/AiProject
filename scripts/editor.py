@@ -18,7 +18,7 @@ class Editor:
         self.resetEditor()
 
         self.buttons = []
-        prev_text = Text('back', pos = (50, 50), size=30)
+        prev_text = Text('back', pos = vh(3.5, 4.5), size=UIsize(1.5))
         prev_button = Button(prev_text, (0 ,255, 0), button_type='prev')
         self.buttons.append(prev_button)
 

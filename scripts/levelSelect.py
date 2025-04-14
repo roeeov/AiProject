@@ -12,6 +12,8 @@ class LevelSelect:
 
         self.display = display
         self.scroll = 0
+        self.levelInfoIMG = load_image(path='UI/buttons/levelInfo.png', scale=(UIsize(75), UIsize(6)))
+        self.background = load_image('UI/backgrounds/menuBG.png', scale=DISPLAY_SIZE)
         self.reloadButtons()
 
     def reloadButtons(self):
@@ -28,15 +30,15 @@ class LevelSelect:
         online_map_dict = map_manager.getOnlineMapsDict()
         for idx, map in enumerate(online_map_dict.values()):
             map_text = map['info']['name'] + ' '*5 + map['info']['creator'] + ' '*5 + map['info']['difficulty']
-            map_text = Text(map_text, pos = (vh(50, -1)[0], (idx+1)*vh(-1, 12)[1] - vh(-1, 3)[1]), size=UIsize(6))
-            map_button = Button(map_text, (0 ,255, 0), "map_idx: " + map['info']['id'])
+            map_text = Text(map_text, pos = (vh(50, -1)[0], (idx+1)*vh(-1, 14)[1] - vh(-1, 3)[1]), size=UIsize(4), color=(40, 40, 40))
+            map_button = Button(map_text, (0 ,255, 0), "map_idx: " + map['info']['id'], scale_factor=1.05, image=self.levelInfoIMG)
             self.buttons.append(map_button)
 
-        self.max_scroll = -vh(-1, 12)[1] * len(online_map_dict)
+        self.max_scroll = -vh(-1, 14)[1] * len(online_map_dict)
         
     def run(self):
         
-        self.display.fill((242, 54, 245))
+        self.display.blit(self.background, (0, 0))
 
         mouse_pressed = False
         mouse_released = False
@@ -94,6 +96,8 @@ class LevelPage:
         prev_button = Button(prev_text, (0 ,255, 0), button_type='prev', image=load_image('UI/buttons/back.png', (UIsize(3), UIsize(3))) )
         self.buttons.append(prev_button)
 
+        self.diff_faces = {diff: load_image(f'UI/difficulity/{diff}.png', scale=(UIsize(3), UIsize(3))) for diff in DIFFICULTIES}
+
     def run(self):
 
         self.display.fill((245, 137, 49))
@@ -109,8 +113,11 @@ class LevelPage:
         map_creator_text.blit(display=self.display)
 
         map_difficulty = map_info["difficulty"]
-        map_difficulty_text = Text("difficulty: " + map_difficulty, pos =vh(65, 40), size=UIsize(3), color=(255, 255, 255))
+        map_difficulty_text = Text("difficulty: ", pos =vh(65, 40), size=UIsize(3), color=(255, 255, 255))
         map_difficulty_text.blit(display=self.display)
+        # blit difficulity face
+        diff_faces_rect = self.diff_faces[map_difficulty].get_rect(center=vh(74, 40))
+        self.display.blit(self.diff_faces[map_difficulty], diff_faces_rect)
 
         mouse_pressed = False
         mouse_released = False
